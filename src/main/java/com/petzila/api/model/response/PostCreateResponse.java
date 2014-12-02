@@ -1,12 +1,11 @@
-package com.petzila.api.model;
+package com.petzila.api.model.response;
 
 import com.google.common.base.MoreObjects;
 
 /**
  * Created by rsaborio on 20/11/14.
  */
-public class PostResponse {
-    public String status;
+public class PostCreateResponse extends Response {
     public Data data;
 
     public static class Data {
