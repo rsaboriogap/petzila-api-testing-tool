@@ -116,6 +116,10 @@ public final class Petzila {
         public static PostCreateResponse postBase64(Post post, String userKey) {
             return call("/post/base64", METHOD_POST, userKey, post, PostCreateResponse.class);
         }
+
+        public static PostCommentCreateResponse comment(Comment comment, String userKey) {
+            return call("/post/comment", METHOD_POST, userKey, comment, PostCommentCreateResponse.class);
+        }
     }
 
     public static final class MediaAPI {
