@@ -2,39 +2,46 @@ package com.petzila.api.model.response;
 
 import com.google.common.base.MoreObjects;
 
+import java.util.List;
+
 /**
  * Created by rsaborio on 19/11/14.
  */
-public class LoginResponse extends Response {
+public final class UserSignUpResponse extends Response {
     public Data data;
 
     public static class Data {
-        public String temporalPassword;
+        public boolean temporal;
         public String id;
         public String email;
         public String firstName;
         public String lastName;
         public String description;
+        public String profilePicture;
         public String username;
-        public String petsCount;
-        public String token;
-        public String renewToken;
-        public String notificationCount;
+        public String status;
+        public String createdAt;
+        public String updatedAt;
+        public long followingCount;
+        public List<Long> following;
+        public List<Long> petsCount;
+        public List<Long> pets;
 
         @Override
         public String toString() {
             return MoreObjects.toStringHelper(this)
-                    .add("temporalPassword", temporalPassword)
+                    .add("temporal", temporal)
                     .add("id", id)
                     .add("email", email)
                     .add("firstName", firstName)
                     .add("lastName", lastName)
                     .add("description", description)
+                    .add("profilePicture", profilePicture)
                     .add("username", username)
-                    .add("petsCount", petsCount)
-                    .add("token", token)
-                    .add("renewToken", renewToken)
-                    .add("notificationCount", notificationCount)
+                    .add("status", status)
+                    .add("createdAt", createdAt)
+                    .add("updatedAt", updatedAt)
+                    .add("followingCount", followingCount)
                     .toString();
         }
     }

@@ -5,7 +5,7 @@ import com.google.common.base.MoreObjects;
 /**
  * Created by rylexr on 28/11/14.
  */
-public class SignUp extends Entity {
+public final class SignUp extends Entity {
     public String email;
     public String password;
     public String username;

@@ -1,15 +1,5 @@
 package com.petzila.api;
 
-import com.petzila.api.model.*;
-import com.petzila.api.model.response.PetCreateResponse;
-import com.petzila.api.model.response.SignUpResponse;
-import com.petzila.api.util.Utils;
-import org.apache.commons.cli.*;
-
-import java.io.File;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 /**
  * Created by rsaborio on 19/11/14.
  */

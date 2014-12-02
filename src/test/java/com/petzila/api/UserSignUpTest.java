@@ -2,7 +2,7 @@ package com.petzila.api;
 
 import com.petzila.api.model.SignUp;
 import com.petzila.api.model.response.ErrorResponse;
-import com.petzila.api.model.response.SignUpResponse;
+import com.petzila.api.model.response.UserSignUpResponse;
 import com.petzila.api.util.Utils;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -32,7 +32,7 @@ public class UserSignUpTest {
         signUp.location.country = "Costa Rica";
         signUp.location.city = "San José";
         signUp.location.zipCode = "1000";
-        SignUpResponse response = Petzila.UserAPI.signup(signUp);
+        UserSignUpResponse response = Petzila.UserAPI.signup(signUp);
 
         assertNotNull(response);
         assertEquals(response.status, "Success");

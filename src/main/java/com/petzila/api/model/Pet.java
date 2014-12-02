@@ -5,7 +5,7 @@ import com.google.common.base.MoreObjects;
 /**
  * Created by rylexr on 01/12/14.
  */
-public class Pet extends Entity {
+public final class Pet extends Entity {
     public String name;
     public String description;
     public String age;

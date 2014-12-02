@@ -5,7 +5,7 @@ import com.google.common.base.MoreObjects;
 /**
  * Created by rsaborio on 25/11/14.
  */
-public class MediaUploadResponse extends Response {
+public final class MediaUploadResponse extends Response {
     public Data data;
 
     public static class Data {

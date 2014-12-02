@@ -5,7 +5,7 @@ import com.google.common.base.MoreObjects;
 /**
  * Created by rsaborio on 20/11/14.
  */
-public class PostCreateResponse extends Response {
+public final class PostCreateResponse extends Response {
     public Data data;
 
     public static class Data {

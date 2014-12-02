@@ -70,7 +70,7 @@ public final class Petzila {
         System.out.println(MessageFormat.format("  -- Body: {0}", entity));
         System.out.println(MessageFormat.format("  -- Content Type: {0}", mediaType));
         System.out.println(MessageFormat.format("  -- Response: {0}", response));
-        System.out.println(MessageFormat.format("  -- Duration ms: {0}", end - start));
+        System.out.println(MessageFormat.format("  -- Duration: {0}ms", end - start));
         return response;
     }
 
@@ -83,12 +83,12 @@ public final class Petzila {
     }
 
     public static final class UserAPI {
-        public static LoginResponse login(Login login) {
-            return call("/user/login", METHOD_POST, login, LoginResponse.class);
+        public static UserLoginResponse login(Login login) {
+            return call("/user/login", METHOD_POST, login, UserLoginResponse.class);
         }
 
-        public static SignUpResponse signup(SignUp signUp) {
-            return call("/user/signup", METHOD_POST, signUp, SignUpResponse.class);
+        public static UserSignUpResponse signup(SignUp signUp) {
+            return call("/user/signup", METHOD_POST, signUp, UserSignUpResponse.class);
         }
     }
 

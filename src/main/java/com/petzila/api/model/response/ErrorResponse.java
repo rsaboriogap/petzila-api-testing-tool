@@ -5,7 +5,7 @@ import com.google.common.base.MoreObjects;
 /**
  * Created by rsaborio on 02/12/14.
  */
-public class ErrorResponse extends Response {
+public final class ErrorResponse extends Response {
     public int code;
     public Data data;
 
