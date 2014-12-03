@@ -20,12 +20,18 @@ public final class Environments {
         envs.put("pro", "https://api.petzila.com");
     }
 
+    private static String environment;
+
     public static String get() {
-        return envs.get(Utils.getProperty("api.environment"));
+        return envs.get(environment == null ? Utils.getProperty("api.environment") : environment);
     }
 
     public static String get(String environment) {
         return envs.get(environment);
+    }
+
+    public static void set(String environment) {
+        Environments.environment = environment;
     }
 
     private Environments() {

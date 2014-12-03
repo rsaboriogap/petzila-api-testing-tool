@@ -71,13 +71,14 @@ public final class Petzila {
         long end = System.currentTimeMillis();
         Response apiResponse = response.getStatusInfo().getStatusCode() == javax.ws.rs.core.Response.Status.OK.getStatusCode() ?
                 response.readEntity(responseClass) : response.readEntity(ErrorResponse.class);
+        apiResponse.report.duration = end - start;
 
         String logLevel = Utils.getProperty("api.loglevel");
         if (logLevel.equals("basic") || logLevel.equals("full")) {
             System.out.println(MessageFormat.format("HTTP/{0} {1}  {2} ms\t {3} bytes  ->  {4} {5}",
                     "1.1", //@TODO obtener la version de los headers
                     response.getStatus(),
-                    end - start,
+                    apiResponse.report.duration,
                     response.getLength(),
                     method,
                     path));
