@@ -56,12 +56,14 @@ public final class Petzila {
 
     private static <T extends Response, E> T call(String path, String method, String userKey, E entity, MediaType mediaType, Class<T> responseClass) {
         long start = System.currentTimeMillis();
-        T response = target
+        Invocation.Builder builder = target
                 .path(path)
                 .request()
-                .header(HEADER_VERSION, PETZILA_API_VERSION)
-                .header(HEADER_USER_KEY, userKey)
-                .method(method, javax.ws.rs.client.Entity.entity(entity, mediaType), responseClass);
+                .header(HEADER_VERSION, PETZILA_API_VERSION);
+        if (userKey != null)
+          builder.header(HEADER_USER_KEY, userKey);
+        T response = builder.method(method, entity != null ? javax.ws.rs.client.Entity.entity(entity, mediaType) : null, responseClass);
+
         long end = System.currentTimeMillis();
 
         System.out.println(MessageFormat.format("{0} {1}", method, path));
@@ -82,6 +84,10 @@ public final class Petzila {
         return call(path, method, userKey, entity, MediaType.APPLICATION_JSON_TYPE, responseClass);
     }
 
+    private static <T extends Response> T call(String path, String method, Class<T> responseClass) {
+        return call(path, method, null, null, MediaType.APPLICATION_JSON_TYPE, responseClass);
+    }
+
     public static final class UserAPI {
         public static UserLoginResponse login(Login login) {
             return call("/user/login", METHOD_POST, login, UserLoginResponse.class);
@@ -93,6 +99,10 @@ public final class Petzila {
     }
 
     public static final class PetAPI {
+        public static PetGetResponse get(String petId) {
+            return call(MessageFormat.format("/pet/{0}", petId), METHOD_GET, PetGetResponse.class);
+        }
+
         public static PetCreateResponse create(Pet pet, String userKey) {
             return call("/pet", METHOD_POST, userKey, pet, PetCreateResponse.class);
         }

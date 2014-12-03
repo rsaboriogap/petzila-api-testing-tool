@@ -4,11 +4,14 @@ import com.petzila.api.model.Comment;
 import com.petzila.api.model.Login;
 import com.petzila.api.model.Pet;
 import com.petzila.api.model.Post;
+import com.petzila.api.model.response.ErrorResponse;
 import com.petzila.api.model.response.PostCommentCreateResponse;
 import com.petzila.api.model.response.PostCreateResponse;
 import com.petzila.api.util.Utils;
 import org.junit.Before;
 import org.junit.Test;
+
+import javax.ws.rs.BadRequestException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -38,7 +41,12 @@ public class PostCommentCreateTest {
         pet.gender = "female";
         pet.profilePicture = Utils.asBase64("/dog1.jpg");
         pet.resourceType = "image/jpeg";
-        petId = Petzila.PetAPI.create(pet, userKey).data.id;
+        try {
+            petId = Petzila.PetAPI.create(pet, userKey).data.id;
+        } catch (BadRequestException bre) {
+            bre.printStackTrace();
+            System.out.println(bre.getResponse().readEntity(ErrorResponse.class));
+        }
 
         Post post = new Post();
         post.petId = petId;
