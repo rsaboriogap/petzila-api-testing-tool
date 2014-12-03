@@ -9,14 +9,14 @@ import java.util.concurrent.Executors;
  * Created by rsaborio on 19/11/14.
  */
 public class Main {
-    private static final int DEFAULT_THREAD_COUNT = 50;
+    private static final int DEFAULT_THREAD_COUNT = 10;
 
     public static void main(String[] args) throws Exception {
         Options options = new Options();
         options.addOption(new Option("t", true, "Number of concurrent Threads"));
 
         CommandLineParser parser = new BasicParser();
-        CommandLine cmd = parser.parse( options, args);
+        CommandLine cmd = parser.parse(options, args);
 
         int threadCount = DEFAULT_THREAD_COUNT;
         if (cmd.hasOption('t')) {
@@ -36,4 +36,5 @@ public class Main {
         executor.shutdown();
         while (!executor.isTerminated()) {
         }
-    }}
+    }
+}
