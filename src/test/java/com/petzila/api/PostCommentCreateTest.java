@@ -53,7 +53,7 @@ public class PostCommentCreateTest {
         post.description = "This is my awesome dog!";
         post.replacePetProfilePicture = false;
         post.content = Utils.asFilename("/dog1.jpg");
-        postId = Petzila.PostAPI.postBinary(post, userKey).data.id;
+        postId = Petzila.PostAPI.createBinary(post, userKey).data.id;
     }
 
     @Test
@@ -61,7 +61,7 @@ public class PostCommentCreateTest {
         Comment comment = new Comment();
         comment.comment = "This is a new comment";
         comment.postId = postId;
-        PostCommentCreateResponse response = Petzila.PostAPI.comment(comment, userKey);
+        PostCommentCreateResponse response = Petzila.PostAPI.createComment(comment, userKey);
 
         assertNotNull(response);
         assertEquals(response.status, "Success");

@@ -2,16 +2,20 @@ package com.petzila.api;
 
 import com.petzila.api.model.*;
 import com.petzila.api.model.response.*;
+import com.petzila.api.model.response.Response;
 import com.petzila.api.util.Environments;
 import com.petzila.api.util.SecureRestClientTrustManager;
+import com.petzila.api.util.Utils;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.media.multipart.FormDataMultiPart;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.media.multipart.file.FileDataBodyPart;
 
 import javax.net.ssl.SSLContext;
+import javax.ws.rs.BadRequestException;
 import javax.ws.rs.client.*;
-import javax.ws.rs.core.MediaType;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.*;
 import java.io.File;
 import java.text.MessageFormat;
 
@@ -55,25 +59,40 @@ public final class Petzila {
     }
 
     private static <T extends Response, E> T call(String path, String method, String userKey, E entity, MediaType mediaType, Class<T> responseClass) {
-        long start = System.currentTimeMillis();
         Invocation.Builder builder = target
                 .path(path)
                 .request()
                 .header(HEADER_VERSION, PETZILA_API_VERSION);
         if (userKey != null)
-          builder.header(HEADER_USER_KEY, userKey);
-        T response = builder.method(method, entity != null ? javax.ws.rs.client.Entity.entity(entity, mediaType) : null, responseClass);
+            builder.header(HEADER_USER_KEY, userKey);
 
+        long start = System.currentTimeMillis();
+        javax.ws.rs.core.Response response = builder.method(method, entity != null ? Entity.entity(entity, mediaType) : null);
         long end = System.currentTimeMillis();
+        Response apiResponse = response.getStatusInfo().getStatusCode() == javax.ws.rs.core.Response.Status.OK.getStatusCode() ?
+                response.readEntity(responseClass) : response.readEntity(ErrorResponse.class);
 
-        System.out.println(MessageFormat.format("{0} {1}", method, path));
-        if (userKey != null)
-            System.out.println(MessageFormat.format("  -- User Key: {0}", userKey));
-        System.out.println(MessageFormat.format("  -- Body: {0}", entity));
-        System.out.println(MessageFormat.format("  -- Content Type: {0}", mediaType));
-        System.out.println(MessageFormat.format("  -- Response: {0}", response));
-        System.out.println(MessageFormat.format("  -- Duration: {0}ms", end - start));
-        return response;
+        String logLevel = Utils.getProperty("api.loglevel");
+        if (logLevel.equals("basic") || logLevel.equals("full")) {
+            System.out.println(MessageFormat.format("HTTP/{0} {1}  {2} ms\t {3} bytes  ->  {4} {5}",
+                    "1.1", //@TODO obtener la version de los headers
+                    response.getStatus(),
+                    end - start,
+                    response.getLength(),
+                    method,
+                    path));
+            if (logLevel.equals("full")) {
+                if (userKey != null)
+                    System.out.println(MessageFormat.format("  -- User Key: {0}", userKey));
+                if (entity != null)
+                    System.out.println(MessageFormat.format("  -- Body: {0}", entity));
+                System.out.println(MessageFormat.format("  -- Response: {0}", apiResponse));
+            }
+        }
+        if (response.getStatusInfo().getStatusCode() != javax.ws.rs.core.Response.Status.OK.getStatusCode())
+            throw new BadRequestException(response);
+
+        return (T) apiResponse;
     }
 
     private static <T extends Response, E> T call(String path, String method, E entity, Class<T> responseClass) {
@@ -109,11 +128,15 @@ public final class Petzila {
     }
 
     public static final class PostAPI {
-        public static PostCreateResponse post(Post post, String userKey) {
+        public static PostGetResponse get() {
+            return call("/post", METHOD_GET, PostGetResponse.class);
+        }
+
+        public static PostCreateResponse create(Post post, String userKey) {
             return call("/post", METHOD_POST, userKey, post, PostCreateResponse.class);
         }
 
-        public static PostCreateResponse postBinary(Post post, String userKey) {
+        public static PostCreateResponse createBinary(Post post, String userKey) {
             FormDataMultiPart form = new FormDataMultiPart();
             form.field("petId", post.petId);
             form.field("description", post.description);
@@ -123,11 +146,11 @@ public final class Petzila {
             return Petzila.call("/post/binary", METHOD_POST, userKey, form, MediaType.MULTIPART_FORM_DATA_TYPE, PostCreateResponse.class);
         }
 
-        public static PostCreateResponse postBase64(Post post, String userKey) {
+        public static PostCreateResponse createBase64(Post post, String userKey) {
             return call("/post/base64", METHOD_POST, userKey, post, PostCreateResponse.class);
         }
 
-        public static PostCommentCreateResponse comment(Comment comment, String userKey) {
+        public static PostCommentCreateResponse createComment(Comment comment, String userKey) {
             return call("/post/comment", METHOD_POST, userKey, comment, PostCommentCreateResponse.class);
         }
     }
