@@ -1,5 +1,7 @@
 package com.petzila.api;
 
+import com.petzila.api.flow.Flow;
+import com.petzila.api.flow.PostGetFlow;
 import com.petzila.api.model.response.PostGetResponse;
 import com.petzila.api.util.Environments;
 import org.apache.commons.cli.*;
@@ -26,7 +28,7 @@ public class Main {
         options.addOption(new Option("h", false, "Show this help"));
         options.addOption(new Option("u", true, "Number of concurrent users"));
         options.addOption(new Option("t", true, "Duration of test (S, M, H) eg. 1H= one hour test"));
-        options.addOption(new Option("d", true, "Time delay, random delay between 1 and N"));
+        options.addOption(new Option("d", true, "Time delay, random delay between 1 sec and N secs"));
         options.addOption(new Option("e", true, "Environment (local, dev, qa, qa2, qa3, qa4, pre, stg)"));
     }
 
@@ -44,7 +46,7 @@ public class Main {
             threadCount = Integer.parseInt(cmd.getOptionValue('u'));
         }
         if (cmd.hasOption('d')) {
-            delayTimeMs = Integer.parseInt(cmd.getOptionValue('d'));
+            delayTimeMs = Integer.parseInt(cmd.getOptionValue('d')) * 1000;
             if (delayTimeMs < DEFAULT_DELAY_TIME_MS)
                 delayTimeMs = DEFAULT_DELAY_TIME_MS;
         }
@@ -72,20 +74,22 @@ public class Main {
         final AtomicLong responseTime = new AtomicLong();
         final AtomicLong shortestCall = new AtomicLong(Long.MAX_VALUE);
         final AtomicLong longestCall = new AtomicLong();
+        final Flow flow = new PostGetFlow();
         List<Runnable> runnables = new ArrayList<>();
         System.out.println("Preparing " + threadCount + " concurrent users...");
+        System.out.println("Flow to run '" + flow.getName() + "'");
         for (int i = 0; i < threadCount; i++) {
             runnables.add(new Runnable() {
                 @Override
                 public void run() {
                     try {
-                        PostGetResponse response = Petzila.PostAPI.get();
+                        long duration = flow.run();
                         hitsCount.incrementAndGet();
-                        responseTime.addAndGet(response.report.duration);
-                        if (response.report.duration < shortestCall.get())
-                            shortestCall.set(response.report.duration);
-                        if (response.report.duration > longestCall.get())
-                            longestCall.set(response.report.duration);
+                        responseTime.addAndGet(duration);
+                        if (duration < shortestCall.get())
+                            shortestCall.set(duration);
+                        if (duration > longestCall.get())
+                            longestCall.set(duration);
                     } catch (Exception e) {
                         errorCount.incrementAndGet();
                     }
@@ -98,11 +102,13 @@ public class Main {
         boolean running = true;
         System.out.println("Starting tests...");
         long start = System.currentTimeMillis();
+        int cycles = 0;
         while (running) {
             executor.execute(runnables.get(random.nextInt(threadCount)));
             if (System.currentTimeMillis() - start > testTimeMs)
                 running = false;
             Thread.sleep(random.nextInt(delayTimeMs));
+            cycles++;
         }
         executor.shutdown();
         while (!executor.isTerminated()) {
@@ -117,7 +123,7 @@ public class Main {
         report.averageRT = (responseTime.get() / threadCount) / 1000f;
         report.shortestRT = shortestCall.get() / 1000f;
         report.longestRT = longestCall.get() / 1000f;
-        report.successfulCalls = threadCount - errorCount.get();
+        report.successfulCalls = cycles - errorCount.get();
         report.failedCalls = errorCount.get();
         printReport(report);
     }
