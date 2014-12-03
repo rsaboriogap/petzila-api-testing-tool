@@ -75,10 +75,10 @@ public final class Petzila {
 
         String logLevel = Utils.getProperty("api.loglevel");
         if (logLevel.equals("basic") || logLevel.equals("full")) {
-            System.out.println(MessageFormat.format("HTTP/{0} {1}  {2} ms\t {3} bytes  ->  {4} {5}",
+            System.out.println(MessageFormat.format("HTTP/{0} {1}   {2} secs\t {3} bytes  ->  {4} {5}",
                     "1.1", //@TODO obtener la version de los headers
                     response.getStatus(),
-                    apiResponse.report.duration,
+                    apiResponse.report.duration / 1000f,
                     response.getLength(),
                     method,
                     path));
