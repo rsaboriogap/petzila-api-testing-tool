@@ -15,14 +15,15 @@ buildscript {
 }
 
 ext {
-    junitVersion = '4.11'
+    junit = '4.11'
     jerseyClient = '2.13'
     jerseyMediaJsonJackson = '2.13'
     jerseyMediaMultipart = '2.13'
     commonsCodec = '1.5'
     commonsCli = '1.2'
-    commonsLang3Version = '3.3.2'
+    commonsLang3 = '3.3.2'
     guava = '18.0'
+    reflections = '0.9.9'
 }
 
 repositories {
@@ -30,16 +31,17 @@ repositories {
 }
 
 dependencies {
-    testCompile "junit:junit:$junitVersion"
+    testCompile "junit:junit:$junit"
 
     compile "org.glassfish.jersey.core:jersey-client:$jerseyClient"
     compile "org.glassfish.jersey.media:jersey-media-json-jackson:$jerseyMediaJsonJackson"
     compile "org.glassfish.jersey.media:jersey-media-multipart:$jerseyMediaMultipart"
     compile "commons-codec:commons-codec:$commonsCodec"
     compile "commons-cli:commons-cli:$commonsCli"
-    compile "org.apache.commons:commons-lang3:$commonsLang3Version"
+    compile "org.apache.commons:commons-lang3:$commonsLang3"
     compile "com.google.guava:guava:$guava"
     compile "com.google.guava:guava:$guava"
+    compile "org.reflections:reflections:$reflections"
 }
 
 jar {

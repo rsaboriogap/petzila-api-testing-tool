@@ -12,6 +12,11 @@ public final class PostGetFlow implements Flow {
     }
 
     @Override
+    public String getDescription() {
+        return "Calls the /post/get endpoint";
+    }
+
+    @Override
     public long run() {
         return Petzila.PostAPI.get().report.duration;
     }

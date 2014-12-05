@@ -5,6 +5,8 @@ package com.petzila.api.flow;
  */
 public interface Flow {
     String getName();
-    
+
+    String getDescription();
+
     long run();
 }

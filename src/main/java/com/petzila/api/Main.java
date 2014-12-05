@@ -1,10 +1,12 @@
 package com.petzila.api;
 
 import com.petzila.api.flow.Flow;
+import com.petzila.api.flow.PostCreateCommentFlow;
 import com.petzila.api.flow.PostGetFlow;
 import com.petzila.api.model.response.PostGetResponse;
 import com.petzila.api.util.Environments;
 import org.apache.commons.cli.*;
+import org.reflections.Reflections;
 
 import java.text.MessageFormat;
 import java.util.*;
@@ -24,18 +26,28 @@ public class Main {
 
     private static Map<String, Flow> flows = new HashMap<>();
     static {
-        Flow flow = new PostGetFlow();
-        flows.put(flow.getName(), flow);
+        Reflections reflections = new Reflections(Flow.class.getPackage().getName());
+        Set<Class<? extends Flow>> flowClasses = reflections.getSubTypesOf(Flow.class);
+        Flow flow;
+        for (Class<? extends Flow> f: flowClasses) {
+            try {
+                flow = f.newInstance();
+                flows.put(flow.getName(), flow);
+            } catch (InstantiationException | IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private static Options options = new Options();
     static {
-        options.addOption(new Option("h", false, "Show this help"));
-        options.addOption(new Option("u", true, "Number of concurrent users"));
-        options.addOption(new Option("t", true, "Duration of test (S, M, H) eg. 1H= one hour test"));
-        options.addOption(new Option("d", true, "Time delay, random delay between 1 sec and N secs"));
-        options.addOption(new Option("e", true, "Environment (local, dev, qa, qa2, qa3, qa4, pre, stg)"));
-        options.addOption(new Option("f", true, "Flow to run"));
+        options.addOption(new Option("h", false, "Show this help."));
+        options.addOption(new Option("u", true, "Number of concurrent users. Default = 10."));
+        options.addOption(new Option("t", true, "Duration of test (s, m, h) eg. 1h = one hour test. Default = 1m."));
+        options.addOption(new Option("d", true, "Time delay, random delay between 1 sec and N secs. Default = 1 sec."));
+        options.addOption(new Option("e", true, "Environment (local, dev, qa, qa2, qa3, qa4, pre, stg). Default = local"));
+        options.addOption(new Option("l", false, "Show all registered flows."));
+        options.addOption(new Option("f", true, "Flow to run."));
     }
 
     public static void main(String[] args) throws Exception {
@@ -75,6 +87,17 @@ public class Main {
         if (cmd.hasOption('e')) {
             Environments.set(cmd.getOptionValue('e'));
         }
+        if (cmd.hasOption('l')) {
+            if (flows.isEmpty()) {
+                System.out.println("There are no registered flows.");
+            } else {
+                System.out.println("Registered flows:");
+                for (Flow flow : flows.values()) {
+                    System.out.println(MessageFormat.format("\t{0}  ->  {1}", flow.getName(), flow.getDescription()));
+                }
+            }
+            System.exit(0);
+        }
         if (cmd.hasOption('f')) {
             flowToRun = flows.get(cmd.getOptionValue('f'));
         }
@@ -91,7 +114,7 @@ public class Main {
         final AtomicLong longestCall = new AtomicLong();
         List<Runnable> runnables = new ArrayList<>();
         System.out.println("Preparing " + threadCount + " concurrent users...");
-        System.out.println("Flow to run '" + flowToRun.getName() + "'");
+        System.out.println("Running flow '" + flowToRun.getName() + "'...");
         for (int i = 0; i < threadCount; i++) {
             final Flow flow = flowToRun;
             runnables.add(new Runnable() {
@@ -132,6 +155,7 @@ public class Main {
 
         Report report = new Report();
         report.environment = Environments.get();
+        report.flow = flowToRun;
         report.hits = hitsCount.get();
         report.availability = (1f - errorCount.get() / cycles) * 100;
         report.elapsedTime = (end - start) / 1000f;
@@ -147,6 +171,7 @@ public class Main {
         System.out.println();
         System.out.println();
         System.out.println(MessageFormat.format("Environment: \t\t {0}", report.environment));
+        System.out.println(MessageFormat.format("Flow: \t\t {0}", report.flow.getName()));
         System.out.println(MessageFormat.format("Hits: \t\t\t {0}", report.hits));
         System.out.println(MessageFormat.format("Availability: \t\t {0}%", report.availability));
         System.out.println(MessageFormat.format("Elapsed Time: \t\t {0} secs", report.elapsedTime));
@@ -165,6 +190,7 @@ public class Main {
 
     static class Report {
         String environment;
+        Flow flow;
         int hits;
         float availability;
         float elapsedTime;
