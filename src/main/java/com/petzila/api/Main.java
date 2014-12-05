@@ -133,9 +133,9 @@ public class Main {
         Report report = new Report();
         report.environment = Environments.get();
         report.hits = hitsCount.get();
-        report.availability = (1f - errorCount.get() / threadCount) * 100;
+        report.availability = (1f - errorCount.get() / cycles) * 100;
         report.elapsedTime = (end - start) / 1000f;
-        report.averageRT = (responseTime.get() / threadCount) / 1000f;
+        report.averageRT = (responseTime.get() / cycles) / 1000f;
         report.shortestRT = shortestCall.get() / 1000f;
         report.longestRT = longestCall.get() / 1000f;
         report.successfulCalls = cycles - errorCount.get();
