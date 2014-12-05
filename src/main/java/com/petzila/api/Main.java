@@ -7,9 +7,7 @@ import com.petzila.api.util.Environments;
 import org.apache.commons.cli.*;
 
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -23,6 +21,13 @@ public class Main {
     private static final int DEFAULT_TEST_TIME_MS = 1000 * 60; // one minute
     private static final int DEFAULT_DELAY_TIME_MS = 1000; // one second
 
+
+    private static Map<String, Flow> flows = new HashMap<>();
+    static {
+        Flow flow = new PostGetFlow();
+        flows.put(flow.getName(), flow);
+    }
+
     private static Options options = new Options();
     static {
         options.addOption(new Option("h", false, "Show this help"));
@@ -30,6 +35,7 @@ public class Main {
         options.addOption(new Option("t", true, "Duration of test (S, M, H) eg. 1H= one hour test"));
         options.addOption(new Option("d", true, "Time delay, random delay between 1 sec and N secs"));
         options.addOption(new Option("e", true, "Environment (local, dev, qa, qa2, qa3, qa4, pre, stg)"));
+        options.addOption(new Option("f", true, "Flow to run"));
     }
 
     public static void main(String[] args) throws Exception {
@@ -39,6 +45,7 @@ public class Main {
         int threadCount = DEFAULT_THREAD_COUNT;
         int testTimeMs = DEFAULT_TEST_TIME_MS;
         int delayTimeMs = DEFAULT_DELAY_TIME_MS;
+        Flow flowToRun = null;
         if (cmd.hasOption('h')) {
             printHelp();
         }
@@ -68,17 +75,25 @@ public class Main {
         if (cmd.hasOption('e')) {
             Environments.set(cmd.getOptionValue('e'));
         }
+        if (cmd.hasOption('f')) {
+            flowToRun = flows.get(cmd.getOptionValue('f'));
+        }
+
+        if (flowToRun == null) {
+            System.err.println("Invalid -f option - Flow wasn't specified");
+            printHelp();
+        }
 
         final AtomicInteger errorCount = new AtomicInteger();
         final AtomicInteger hitsCount = new AtomicInteger();
         final AtomicLong responseTime = new AtomicLong();
         final AtomicLong shortestCall = new AtomicLong(Long.MAX_VALUE);
         final AtomicLong longestCall = new AtomicLong();
-        final Flow flow = new PostGetFlow();
         List<Runnable> runnables = new ArrayList<>();
         System.out.println("Preparing " + threadCount + " concurrent users...");
-        System.out.println("Flow to run '" + flow.getName() + "'");
+        System.out.println("Flow to run '" + flowToRun.getName() + "'");
         for (int i = 0; i < threadCount; i++) {
+            final Flow flow = flowToRun;
             runnables.add(new Runnable() {
                 @Override
                 public void run() {
