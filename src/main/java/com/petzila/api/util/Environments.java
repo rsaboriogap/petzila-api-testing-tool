@@ -12,6 +12,7 @@ public final class Environments {
         envs.put("local", "http://localhost:3000");
         envs.put("dev", "https://dev.petzila.com");
         envs.put("qa", "https://qa.petzila.com");
+        envs.put("perf", "http://54.91.17.132:3000");
         envs.put("qa2", "https://qa2.petzila.com");
         envs.put("qa3", "https://qa3.petzila.com");
         envs.put("qa4", "https://qa4.petzila.com");
