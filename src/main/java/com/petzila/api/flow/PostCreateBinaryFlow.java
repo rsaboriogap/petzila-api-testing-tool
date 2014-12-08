@@ -25,11 +25,14 @@ public final class PostCreateBinaryFlow implements Flow {
 
     @Override
     public void init() {
+        System.out.println("creating test data");
         Login login = new Login();
-        login.email = "rsaborio@wearegap.com";
-        login.password = "qwerty123";
+        login.email = "antaria@gmail.com";
+        login.password = "password";
         login.loginType = "local";
         userKey = Petzila.UserAPI.login(login).data.token;
+
+
 
         Pet pet = new Pet();
         pet.name = "Malú";
@@ -38,6 +41,7 @@ public final class PostCreateBinaryFlow implements Flow {
         pet.size = "small";
         pet.breed = "Cocker Spaniel";
         pet.gender = "female";
+
         try {
             pet.profilePicture = Utils.asBase64("/dog1.jpg");
         } catch (Exception e) {
@@ -46,6 +50,10 @@ public final class PostCreateBinaryFlow implements Flow {
         }
         pet.resourceType = "image/jpeg";
         petId = Petzila.PetAPI.create(pet, userKey).data.id;
+        System.out.println("############ TEST DATA ############");
+        System.out.println("userKey: "+userKey);
+        System.out.println("petId: "+petId);
+        System.out.println("###################################");
     }
 
     @Override
