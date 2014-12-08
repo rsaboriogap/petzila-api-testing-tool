@@ -44,7 +44,7 @@ public class PostCreateTest {
         post.petId = petId;
         post.description = "This is my awesome dog!";
         post.replacePetProfilePicture = false;
-        PostCreateResponse response = Petzila.PostAPI.createBinary(post, userKey, Utils.asTempFilename("/dog1.jpg"));
+        PostCreateResponse response = Petzila.PostAPI.createBinary(post, userKey, Utils.asTempFile("/dog1.jpg"));
 
         assertNotNull(response);
         assertEquals(response.status, "Success");

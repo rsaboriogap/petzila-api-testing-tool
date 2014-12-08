@@ -36,7 +36,7 @@ public final class Utils {
         return ByteStreams.toByteArray(Utils.class.getResourceAsStream(resource));
     }
 
-    public static File asTempFilename(String resource) throws Exception {
+    public static File asTempFile(String resource) throws Exception {
         File f = File.createTempFile(resource.substring(1, resource.indexOf('.')), resource.substring(resource.indexOf('.')));
         Files.write(Paths.get(f.toURI()), ByteStreams.toByteArray(Utils.class.getResourceAsStream(resource)));
         return f;

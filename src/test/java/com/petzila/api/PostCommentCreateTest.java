@@ -6,7 +6,6 @@ import com.petzila.api.model.Pet;
 import com.petzila.api.model.Post;
 import com.petzila.api.model.response.ErrorResponse;
 import com.petzila.api.model.response.PostCommentCreateResponse;
-import com.petzila.api.model.response.PostCreateResponse;
 import com.petzila.api.util.Utils;
 import org.junit.Before;
 import org.junit.Test;
@@ -52,7 +51,7 @@ public class PostCommentCreateTest {
         post.petId = petId;
         post.description = "This is my awesome dog!";
         post.replacePetProfilePicture = false;
-        postId = Petzila.PostAPI.createBinary(post, userKey, Utils.asTempFilename("/dog1.jpg")).data.id;
+        postId = Petzila.PostAPI.createBinary(post, userKey, Utils.asTempFile("/dog1.jpg")).data.id;
     }
 
     @Test

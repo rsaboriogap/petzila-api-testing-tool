@@ -4,8 +4,6 @@ import com.petzila.api.Petzila;
 import com.petzila.api.model.Login;
 import com.petzila.api.model.Pet;
 import com.petzila.api.model.Post;
-import com.petzila.api.model.response.PetCreateResponse;
-import com.petzila.api.model.response.UserLoginResponse;
 import com.petzila.api.util.Utils;
 
 /**
@@ -56,6 +54,6 @@ public final class PostCreateBinaryFlow implements Flow {
         post.petId = petId;
         post.description = "This is my awesome dog!";
         post.replacePetProfilePicture = false;
-        return Petzila.PostAPI.createBinary(post, userKey, Utils.asTempFilename("/dog1.jpg")).report.duration;
+        return Petzila.PostAPI.createBinary(post, userKey, Utils.asTempFile("/dog1.jpg")).report.duration;
     }
 }
