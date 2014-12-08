@@ -4,19 +4,32 @@ import com.petzila.api.Petzila;
 import com.petzila.api.model.Login;
 import com.petzila.api.model.Pet;
 import com.petzila.api.model.Post;
+import com.petzila.api.model.response.PetCreateResponse;
+import com.petzila.api.model.response.UserLoginResponse;
 import com.petzila.api.util.Utils;
 
 /**
  * Created by rylexr on 08/12/14.
  */
-public class PostCreateBinaryFlow implements Flow {
+public final class PostCreateBinaryFlow implements Flow {
     private String userKey;
     private String petId;
 
-    public PostCreateBinaryFlow() throws Exception {
+    @Override
+    public String getName() {
+        return "post-create-binary-flow";
+    }
+
+    @Override
+    public String getDescription() {
+        return "Creates a new post using binary approach";
+    }
+
+    @Override
+    public void init() {
         Login login = new Login();
-        login.email = "antaria@gmail.com";
-        login.password = "password";
+        login.email = "rsaborio@wearegap.com";
+        login.password = "qwerty123";
         login.loginType = "local";
         userKey = Petzila.UserAPI.login(login).data.token;
 
@@ -27,25 +40,22 @@ public class PostCreateBinaryFlow implements Flow {
         pet.size = "small";
         pet.breed = "Cocker Spaniel";
         pet.gender = "female";
-        pet.profilePicture = Utils.asBase64("/dog1.jpg");
+        try {
+            pet.profilePicture = Utils.asBase64("/dog1.jpg");
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(-1);
+        }
         pet.resourceType = "image/jpeg";
         petId = Petzila.PetAPI.create(pet, userKey).data.id;
     }
 
-    public String getName() {
-        return "post-create-binary-flow";
-    }
-
-    public String getDescription() {
-        return "Creates a new post using binary approach";
-    }
-
-    public long run() {
+    @Override
+    public long run() throws Exception {
         Post post = new Post();
         post.petId = petId;
         post.description = "This is my awesome dog!";
         post.replacePetProfilePicture = false;
-        post.content = Utils.asFilename("/dog1.jpg");
-        return Petzila.PostAPI.createBinary(post, userKey).report.duration;
+        return Petzila.PostAPI.createBinary(post, userKey, Utils.asTempFilename("/dog1.jpg")).report.duration;
     }
 }

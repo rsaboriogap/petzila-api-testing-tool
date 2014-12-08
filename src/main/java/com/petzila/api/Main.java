@@ -44,8 +44,8 @@ public class Main {
         options.addOption(new Option("h", false, "Show this help."));
         options.addOption(new Option("u", true, "Number of concurrent users. Default = 10."));
         options.addOption(new Option("t", true, "Duration of test (s, m, h) eg. 1h = one hour test. Default = 1m."));
-        options.addOption(new Option("d", true, "Time delay, random delay between 1 sec and N secs. Default = 1 sec."));
-        options.addOption(new Option("e", true, "Environment (local, dev, qa, qa2, qa3, qa4, pre, stg). Default = local"));
+        options.addOption(new Option("d", true, "Time delay before making a call. Random delay between 1 sec and N secs. Default = 1 sec."));
+        options.addOption(new Option("e", true, "Environment (local, dev, qa, qa2, qa3, qa4, pre, stg). Default = local."));
         options.addOption(new Option("l", false, "Show all registered flows."));
         options.addOption(new Option("f", true, "Flow to run."));
     }
@@ -112,12 +112,20 @@ public class Main {
         final AtomicLong responseTime = new AtomicLong();
         final AtomicLong shortestCall = new AtomicLong(Long.MAX_VALUE);
         final AtomicLong longestCall = new AtomicLong();
-        List<Runnable> runnables = new ArrayList<>();
+//        List<Runnable> runnables = new ArrayList<>();
         System.out.println("Preparing " + threadCount + " concurrent users...");
+        ExecutorService executor = Executors.newFixedThreadPool(threadCount);
         System.out.println("Running flow '" + flowToRun.getName() + "'...");
-        for (int i = 0; i < threadCount; i++) {
-            final Flow flow = flowToRun;
-            runnables.add(new Runnable() {
+        flowToRun.init();
+
+        final Random random = new Random();
+        final Flow flow = flowToRun;
+        System.out.println("Starting tests...");
+        int cycles = 0;
+        boolean running = true;
+        long start = System.currentTimeMillis();
+        while (running) {
+            executor.execute(new Runnable() {
                 @Override
                 public void run() {
                     try {
@@ -130,19 +138,10 @@ public class Main {
                             longestCall.set(duration);
                     } catch (Exception e) {
                         errorCount.incrementAndGet();
+                        e.printStackTrace();
                     }
                 }
             });
-        }
-
-        ExecutorService executor = Executors.newCachedThreadPool();
-        Random random = new Random();
-        boolean running = true;
-        System.out.println("Starting tests...");
-        long start = System.currentTimeMillis();
-        int cycles = 0;
-        while (running) {
-            executor.execute(runnables.get(random.nextInt(threadCount)));
             if (System.currentTimeMillis() - start > testTimeMs)
                 running = false;
             Thread.sleep(random.nextInt(delayTimeMs));
@@ -157,6 +156,7 @@ public class Main {
         report.environment = Environments.get();
         report.flow = flowToRun;
         report.hits = hitsCount.get();
+        report.threads = threadCount;
         report.availability = (1f - errorCount.get() / cycles) * 100;
         report.elapsedTime = (end - start) / 1000f;
         report.averageRT = (responseTime.get() / cycles) / 1000f;
@@ -171,8 +171,9 @@ public class Main {
         System.out.println();
         System.out.println();
         System.out.println(MessageFormat.format("Environment: \t\t {0}", report.environment));
-        System.out.println(MessageFormat.format("Flow: \t\t {0}", report.flow.getName()));
+        System.out.println(MessageFormat.format("Flow: \t\t\t {0}", report.flow.getName()));
         System.out.println(MessageFormat.format("Hits: \t\t\t {0}", report.hits));
+        System.out.println(MessageFormat.format("Threads: \t\t {0}", report.threads));
         System.out.println(MessageFormat.format("Availability: \t\t {0}%", report.availability));
         System.out.println(MessageFormat.format("Elapsed Time: \t\t {0} secs", report.elapsedTime));
         System.out.println(MessageFormat.format("Average RT: \t\t {0} secs", report.averageRT));
@@ -192,6 +193,7 @@ public class Main {
         String environment;
         Flow flow;
         int hits;
+        int threads;
         float availability;
         float elapsedTime;
         float averageRT;

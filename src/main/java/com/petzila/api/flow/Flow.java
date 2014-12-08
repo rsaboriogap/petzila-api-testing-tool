@@ -8,5 +8,7 @@ public interface Flow {
 
     String getDescription();
 
-    long run();
+    void init();
+
+    long run() throws Exception;
 }

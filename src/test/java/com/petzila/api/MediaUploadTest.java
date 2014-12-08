@@ -26,9 +26,9 @@ public class MediaUploadTest {
     }
 
     @Test
-    public void testUploadHappyPath() {
+    public void testUploadHappyPath() throws Exception {
         Media media = new Media();
-        media.media = Utils.asFilename("/dog1.jpg");
+        media.media = Utils.asTempFilename("/dog1.jpg");
         MediaUploadResponse response = Petzila.MediaAPI.upload(media, userKey);
 
         assertNotNull(response);

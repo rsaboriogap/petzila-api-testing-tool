@@ -39,13 +39,12 @@ public class PostCreateTest {
     }
 
     @Test
-    public void testPostCreateMultipartHappyPath() {
+    public void testPostCreateMultipartHappyPath() throws Exception {
         Post post = new Post();
         post.petId = petId;
         post.description = "This is my awesome dog!";
         post.replacePetProfilePicture = false;
-        post.content = Utils.asFilename("/dog1.jpg");
-        PostCreateResponse response = Petzila.PostAPI.createBinary(post, userKey);
+        PostCreateResponse response = Petzila.PostAPI.createBinary(post, userKey, Utils.asTempFilename("/dog1.jpg"));
 
         assertNotNull(response);
         assertEquals(response.status, "Success");

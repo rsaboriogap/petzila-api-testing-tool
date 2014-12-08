@@ -69,16 +69,18 @@ public final class Petzila {
         long start = System.currentTimeMillis();
         javax.ws.rs.core.Response response = builder.method(method, entity != null ? Entity.entity(entity, mediaType) : null);
         long end = System.currentTimeMillis();
-        Response apiResponse = response.getStatusInfo().getStatusCode() == javax.ws.rs.core.Response.Status.OK.getStatusCode() ?
-                response.readEntity(responseClass) : response.readEntity(ErrorResponse.class);
-        apiResponse.report.duration = end - start;
+        T apiResponse = null;
+        if (response.getStatusInfo().getStatusCode() == javax.ws.rs.core.Response.Status.OK.getStatusCode()) {
+            apiResponse = response.readEntity(responseClass);
+            apiResponse.report.duration = end - start;
+        }
 
         String logLevel = Utils.getProperty("api.loglevel");
         if (logLevel.equals("basic") || logLevel.equals("full")) {
             System.out.println(MessageFormat.format("HTTP/{0} {1}   {2} secs\t {3} bytes  ->  {4} {5}",
                     "1.1", //@TODO obtener la version de los headers
                     response.getStatus(),
-                    apiResponse.report.duration / 1000f,
+                    (end - start) / 1000f,
                     response.getLength(),
                     method,
                     path));
@@ -87,13 +89,15 @@ public final class Petzila {
                     System.out.println(MessageFormat.format("  -- User Key: {0}", userKey));
                 if (entity != null)
                     System.out.println(MessageFormat.format("  -- Body: {0}", entity));
-                System.out.println(MessageFormat.format("  -- Response: {0}", apiResponse));
+                if (apiResponse != null) {
+                    System.out.println(MessageFormat.format("  -- Response: {0}", apiResponse));
+                }
             }
         }
         if (response.getStatusInfo().getStatusCode() != javax.ws.rs.core.Response.Status.OK.getStatusCode())
             throw new BadRequestException(response);
 
-        return (T) apiResponse;
+        return apiResponse;
     }
 
     private static <T extends Response, E> T call(String path, String method, E entity, Class<T> responseClass) {
@@ -137,12 +141,12 @@ public final class Petzila {
             return call("/post", METHOD_POST, userKey, post, PostCreateResponse.class);
         }
 
-        public static PostCreateResponse createBinary(Post post, String userKey) {
+        public static PostCreateResponse createBinary(Post post, String userKey, File media) {
             FormDataMultiPart form = new FormDataMultiPart();
             form.field("petId", post.petId);
             form.field("description", post.description);
             form.field("replacePetProfilePicture", String.valueOf(post.replacePetProfilePicture));
-            form.bodyPart(new FileDataBodyPart("media", new File(post.content)));
+            form.bodyPart(new FileDataBodyPart("media", media));
 
             return Petzila.call("/post/binary", METHOD_POST, userKey, form, MediaType.MULTIPART_FORM_DATA_TYPE, PostCreateResponse.class);
         }
@@ -159,7 +163,7 @@ public final class Petzila {
     public static final class MediaAPI {
         public static MediaUploadResponse upload(Media media, String userKey) {
             FormDataMultiPart form = new FormDataMultiPart();
-            form.bodyPart(new FileDataBodyPart("media", new File(media.media)));
+            form.bodyPart(new FileDataBodyPart("media", media.media));
 
             return Petzila.call("/media/upload", METHOD_POST, userKey, form, MediaType.MULTIPART_FORM_DATA_TYPE, MediaUploadResponse.class);
         }

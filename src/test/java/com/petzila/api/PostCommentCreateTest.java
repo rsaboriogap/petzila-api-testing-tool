@@ -52,8 +52,7 @@ public class PostCommentCreateTest {
         post.petId = petId;
         post.description = "This is my awesome dog!";
         post.replacePetProfilePicture = false;
-        post.content = Utils.asFilename("/dog1.jpg");
-        postId = Petzila.PostAPI.createBinary(post, userKey).data.id;
+        postId = Petzila.PostAPI.createBinary(post, userKey, Utils.asTempFilename("/dog1.jpg")).data.id;
     }
 
     @Test
