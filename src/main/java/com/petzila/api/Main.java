@@ -12,6 +12,7 @@ import java.text.MessageFormat;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -150,18 +151,18 @@ public class Main {
             Thread.sleep(10);
             cycles++;
         }
-        executor.shutdownNow();
-        while (!executor.isTerminated()) {
-            Thread.yield();
-        }
         long end = System.currentTimeMillis();
+        executor.shutdownNow();
+        System.out.println();
+        System.out.println("Preparing report...");
+        executor.awaitTermination(10, TimeUnit.SECONDS);
 
         Report report = new Report();
         report.environment = Environments.get();
         report.flow = flowToRun;
         report.hits = hitsCount.get();
         report.threads = threadCount;
-        report.availability = (1f - errorCount.get() / cycles) * 100;
+        report.availability = (1f - (float) errorCount.get() / (float) cycles) * 100f;
         report.elapsedTime = (end - start) / 1000f;
         report.averageRT = (responseTime.get() / cycles) / 1000f;
         report.shortestRT = shortestCall.get() / 1000f;
@@ -169,6 +170,8 @@ public class Main {
         report.successfulCalls = cycles - errorCount.get();
         report.failedCalls = errorCount.get();
         printReport(report);
+
+        System.exit(0);
     }
 
     private static void printReport(Report report) {
