@@ -1,9 +1,6 @@
 package com.petzila.api;
 
 import com.petzila.api.flow.Flow;
-import com.petzila.api.flow.PostCreateCommentFlow;
-import com.petzila.api.flow.PostGetFlow;
-import com.petzila.api.model.response.PostGetResponse;
 import com.petzila.api.util.Environments;
 import org.apache.commons.cli.*;
 import org.reflections.Reflections;
@@ -169,6 +166,7 @@ public class Main {
         report.longestRT = longestCall.get() / 1000f;
         report.successfulCalls = cycles - errorCount.get();
         report.failedCalls = errorCount.get();
+        report.callsPerSeconds = report.hits /report.elapsedTime;
         printReport(report);
 
         System.exit(0);
@@ -188,6 +186,7 @@ public class Main {
         System.out.println(MessageFormat.format("Longest RT: \t\t {0} secs", report.longestRT));
         System.out.println(MessageFormat.format("Successful Calls: \t {0}", report.successfulCalls));
         System.out.println(MessageFormat.format("Failed Calls: \t\t {0}", report.failedCalls));
+        System.out.println(MessageFormat.format("Calls per sec: \t\t {0}", report.callsPerSeconds));
     }
 
     private static void printHelp() {
@@ -208,5 +207,6 @@ public class Main {
         float shortestRT;
         int successfulCalls;
         int failedCalls;
+        float callsPerSeconds;
     }
 }
