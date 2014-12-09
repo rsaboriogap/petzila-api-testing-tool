@@ -156,7 +156,6 @@ public class Main {
         report.environment = Environments.get();
         report.flow = flowToRun;
         report.hits = hitsCount.get();
-        report.hitsPerSeconds = report.hits /report.elapsedTime;
         report.threads = threadCount;
         report.availability = (1f - (float) errorCount.get() / (float) cycles) * 100f;
         report.elapsedTime = (end - start) / 1000f;
@@ -165,6 +164,7 @@ public class Main {
         report.longestRT = longestCall.get() / 1000f;
         report.successfulCalls = cycles - errorCount.get();
         report.failedCalls = errorCount.get();
+        report.hitsPerSeconds = report.hits /report.elapsedTime;
         printReport(report);
 
         System.exit(0);
