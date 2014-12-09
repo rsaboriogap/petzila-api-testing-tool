@@ -150,14 +150,13 @@ public class Main {
         }
         long end = System.currentTimeMillis();
         executor.shutdownNow();
-        System.out.println();
-        System.out.println("Preparing report...");
         executor.awaitTermination(10, TimeUnit.SECONDS);
 
         Report report = new Report();
         report.environment = Environments.get();
         report.flow = flowToRun;
         report.hits = hitsCount.get();
+        report.hitsPerSeconds = report.hits /report.elapsedTime;
         report.threads = threadCount;
         report.availability = (1f - (float) errorCount.get() / (float) cycles) * 100f;
         report.elapsedTime = (end - start) / 1000f;
@@ -166,7 +165,6 @@ public class Main {
         report.longestRT = longestCall.get() / 1000f;
         report.successfulCalls = cycles - errorCount.get();
         report.failedCalls = errorCount.get();
-        report.callsPerSeconds = report.hits /report.elapsedTime;
         printReport(report);
 
         System.exit(0);
@@ -178,6 +176,7 @@ public class Main {
         System.out.println(MessageFormat.format("Environment: \t\t {0}", report.environment));
         System.out.println(MessageFormat.format("Flow: \t\t\t {0}", report.flow.getName()));
         System.out.println(MessageFormat.format("Hits: \t\t\t {0}", report.hits));
+        System.out.println(MessageFormat.format("Hits/sec: \t\t {0}", report.hitsPerSeconds));
         System.out.println(MessageFormat.format("Threads: \t\t {0}", report.threads));
         System.out.println(MessageFormat.format("Availability: \t\t {0}%", report.availability));
         System.out.println(MessageFormat.format("Elapsed Time: \t\t {0} secs", report.elapsedTime));
@@ -186,7 +185,6 @@ public class Main {
         System.out.println(MessageFormat.format("Longest RT: \t\t {0} secs", report.longestRT));
         System.out.println(MessageFormat.format("Successful Calls: \t {0}", report.successfulCalls));
         System.out.println(MessageFormat.format("Failed Calls: \t\t {0}", report.failedCalls));
-        System.out.println(MessageFormat.format("Calls per sec: \t\t {0}", report.callsPerSeconds));
     }
 
     private static void printHelp() {
@@ -199,6 +197,7 @@ public class Main {
         String environment;
         Flow flow;
         int hits;
+        float hitsPerSeconds;
         int threads;
         float availability;
         float elapsedTime;
@@ -207,6 +206,5 @@ public class Main {
         float shortestRT;
         int successfulCalls;
         int failedCalls;
-        float callsPerSeconds;
     }
 }
