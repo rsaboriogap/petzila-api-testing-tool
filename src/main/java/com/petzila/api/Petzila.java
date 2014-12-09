@@ -100,16 +100,20 @@ public final class Petzila {
         return apiResponse;
     }
 
-    private static <T extends Response, E> T call(String path, String method, E entity, Class<T> responseClass) {
+    private static <T extends Response, E extends com.petzila.api.model.Entity> T call(String path, String method, E entity, Class<T> responseClass) {
         return call(path, method, null, entity, MediaType.APPLICATION_JSON_TYPE, responseClass);
     }
 
-    private static <T extends Response, E> T call(String path, String method, String userKey, E entity, Class<T> responseClass) {
+    private static <T extends Response, E extends com.petzila.api.model.Entity> T call(String path, String method, String userKey, E entity, Class<T> responseClass) {
         return call(path, method, userKey, entity, MediaType.APPLICATION_JSON_TYPE, responseClass);
     }
 
     private static <T extends Response> T call(String path, String method, Class<T> responseClass) {
         return call(path, method, null, null, MediaType.APPLICATION_JSON_TYPE, responseClass);
+    }
+
+    private static <T extends Response> T call(String path, String method, String userKey, Class<T> responseClass) {
+        return call(path, method, userKey, null, MediaType.APPLICATION_JSON_TYPE, responseClass);
     }
 
     public static final class UserAPI {
@@ -119,6 +123,24 @@ public final class Petzila {
 
         public static UserSignUpResponse signup(SignUp signUp) {
             return call("/user/signup", METHOD_POST, signUp, UserSignUpResponse.class);
+        }
+
+        public static UserDeviceGetResponse getDevices(String userKey, String userId) {
+            return call(MessageFormat.format("/user/{0}/devices", userId), METHOD_GET, userKey, UserDeviceGetResponse.class);
+        }
+    }
+
+    public static final class PetziConnectAPI {
+        public static PetziConnectGetResponse get(String petziId) {
+            return call(MessageFormat.format("/petziConnect/{0}", petziId), METHOD_GET, PetziConnectGetResponse.class);
+        }
+
+        public static PetziConnectUpdateResponse update(PetziConnect petziConnect, String petziId, String userKey) {
+            return call(MessageFormat.format("/petziConnect/{0}/edit", petziId), METHOD_PUT, userKey, petziConnect, PetziConnectUpdateResponse.class);
+        }
+
+        public static PetziConnectCreateResponse create(PetziConnect petziConnect, String petziId, String userKey) {
+            return call(MessageFormat.format("/petziConnect/registration/{0}", petziId), METHOD_POST, userKey, petziConnect, PetziConnectCreateResponse.class);
         }
     }
 
