@@ -112,7 +112,7 @@ public class Main {
         final AtomicLong responseTime = new AtomicLong();
         final AtomicLong shortestCall = new AtomicLong(Long.MAX_VALUE);
         final AtomicLong longestCall = new AtomicLong();
-//        List<Runnable> runnables = new ArrayList<>();
+
         System.out.println("Preparing " + threadCount + " concurrent users...");
         ExecutorService executor = Executors.newFixedThreadPool(threadCount);
         System.out.println("Running flow '" + flowToRun.getName() + "'...");
@@ -125,10 +125,13 @@ public class Main {
         boolean running = true;
         long start = System.currentTimeMillis();
         while (running) {
+            final int delay = delayTimeMs;
             executor.execute(new Runnable() {
                 @Override
                 public void run() {
                     try {
+                        Thread.sleep(random.nextInt(delay));
+
                         long duration = flow.run();
                         hitsCount.incrementAndGet();
                         responseTime.addAndGet(duration);
@@ -138,17 +141,18 @@ public class Main {
                             longestCall.set(duration);
                     } catch (Exception e) {
                         errorCount.incrementAndGet();
-                        e.printStackTrace();
                     }
                 }
             });
-            if (System.currentTimeMillis() - start > testTimeMs)
+            if (System.currentTimeMillis() - start > testTimeMs) {
                 running = false;
-            Thread.sleep(random.nextInt(delayTimeMs));
+            }
+            Thread.sleep(10);
             cycles++;
         }
-        executor.shutdown();
+        executor.shutdownNow();
         while (!executor.isTerminated()) {
+            Thread.yield();
         }
         long end = System.currentTimeMillis();
 
