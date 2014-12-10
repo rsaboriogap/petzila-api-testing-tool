@@ -23,7 +23,6 @@ public class UserDeviceGetTest {
         login.password = "qwerty123";
         login.loginType = "local";
         UserLoginResponse userLoginResponse = Petzila.UserAPI.login(login);
-        String userId = userLoginResponse.data.id;
         String userKey = userLoginResponse.data.token;
 
         PetziConnect petziConnect = new PetziConnect();

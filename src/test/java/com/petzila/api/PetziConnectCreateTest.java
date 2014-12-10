@@ -2,10 +2,15 @@ package com.petzila.api;
 
 import com.petzila.api.model.Login;
 import com.petzila.api.model.PetziConnect;
+import com.petzila.api.model.response.ErrorResponse;
 import com.petzila.api.model.response.PetziConnectCreateResponse;
 import com.petzila.api.model.response.UserLoginResponse;
 import org.junit.Before;
 import org.junit.Test;
+
+import javax.ws.rs.BadRequestException;
+
+import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -14,8 +19,8 @@ import static org.junit.Assert.assertNotNull;
  * Created by rsaborio on 09/12/14.
  */
 public class PetziConnectCreateTest {
-    private static final String PZC_ID = "38:60:77:38:bd:f0";
-    private String userKey;
+    private String userKey1;
+    private String userKey2;
 
     @Before
     public void before() {
@@ -24,18 +29,77 @@ public class PetziConnectCreateTest {
         login.password = "qwerty123";
         login.loginType = "local";
         UserLoginResponse userLoginResponse = Petzila.UserAPI.login(login);
-        userKey = userLoginResponse.data.token;
+        userKey1 = userLoginResponse.data.token;
+
+        login.email = "lema017@gmail.com";
+        login.password = "clarodeluna";
+        userLoginResponse = Petzila.UserAPI.login(login);
+        userKey2 = userLoginResponse.data.token;
     }
 
     @Test
     public void testCreatePetziConnectHappyPath() {
+        String pzcId = UUID.randomUUID().toString();
+
         PetziConnect petziConnect = new PetziConnect();
         petziConnect.pzcName = "Test device";
         petziConnect.isDefault = false;
-        PetziConnectCreateResponse response = Petzila.PetziConnectAPI.create(petziConnect, PZC_ID, userKey);
+        PetziConnectCreateResponse response = Petzila.PetziConnectAPI.create(petziConnect, pzcId, userKey1);
 
         assertNotNull(response);
         assertEquals(response.status, "Success");
         assertNotNull(response.data.hbsUrl);
+    }
+
+    @Test
+    public void testCreateTwoPetziConnectsWithSameIDAndSameOwner() {
+        String pzcId = UUID.randomUUID().toString();
+
+        PetziConnect petziConnect = new PetziConnect();
+        petziConnect.pzcName = "Test device";
+        petziConnect.isDefault = false;
+        PetziConnectCreateResponse response = Petzila.PetziConnectAPI.create(petziConnect, pzcId, userKey1);
+
+        assertNotNull(response);
+        assertEquals(response.status, "Success");
+        assertNotNull(response.data.hbsUrl);
+
+        petziConnect = new PetziConnect();
+        petziConnect.pzcName = "Test device 2";
+        petziConnect.isDefault = false;
+        try {
+            Petzila.PetziConnectAPI.create(petziConnect, pzcId, userKey2);
+        } catch (BadRequestException bre) {
+            ErrorResponse error = bre.getResponse().readEntity(ErrorResponse.class);
+            assertEquals("Invalid expected error code", 1038, error.code);
+            assertEquals("Invalid expected status", "Fail", error.status);
+            assertEquals("Invalid expected message", "PetziConnect is already registered to another user.", error.data.message);
+        }
+    }
+
+    @Test
+    public void testCreateTwoPetziConnectsWithSameIDAndDifferentOwners() {
+        String pzcId = UUID.randomUUID().toString();
+
+        PetziConnect petziConnect = new PetziConnect();
+        petziConnect.pzcName = "Test device";
+        petziConnect.isDefault = false;
+        PetziConnectCreateResponse response = Petzila.PetziConnectAPI.create(petziConnect, pzcId, userKey1);
+
+        assertNotNull(response);
+        assertEquals(response.status, "Success");
+        assertNotNull(response.data.hbsUrl);
+
+        petziConnect = new PetziConnect();
+        petziConnect.pzcName = "Test device 2";
+        petziConnect.isDefault = false;
+        try {
+            Petzila.PetziConnectAPI.create(petziConnect, pzcId, userKey2);
+        } catch (BadRequestException bre) {
+            ErrorResponse error = bre.getResponse().readEntity(ErrorResponse.class);
+            assertEquals("Invalid expected error code", 1038, error.code);
+            assertEquals("Invalid expected status", "Fail", error.status);
+            assertEquals("Invalid expected message", "PetziConnect is already registered to another user.", error.data.message);
+        }
     }
 }
