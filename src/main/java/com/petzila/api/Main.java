@@ -136,6 +136,8 @@ public class Main {
                         shortestCall.set(duration);
                     if (duration > longestCall.get())
                         longestCall.set(duration);
+                } catch (InterruptedException e) {
+                    // do nothing
                 } catch (Exception e) {
                     errorCount.incrementAndGet();
                 }
