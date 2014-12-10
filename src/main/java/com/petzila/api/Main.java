@@ -1,9 +1,6 @@
 package com.petzila.api;
 
 import com.petzila.api.flow.Flow;
-import com.petzila.api.flow.PostCreateCommentFlow;
-import com.petzila.api.flow.PostGetFlow;
-import com.petzila.api.model.response.PostGetResponse;
 import com.petzila.api.util.Environments;
 import org.apache.commons.cli.*;
 import org.reflections.Reflections;
@@ -12,6 +9,7 @@ import java.text.MessageFormat;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -112,7 +110,7 @@ public class Main {
         final AtomicLong responseTime = new AtomicLong();
         final AtomicLong shortestCall = new AtomicLong(Long.MAX_VALUE);
         final AtomicLong longestCall = new AtomicLong();
-//        List<Runnable> runnables = new ArrayList<>();
+
         System.out.println("Preparing " + threadCount + " concurrent users...");
         ExecutorService executor = Executors.newFixedThreadPool(threadCount);
         System.out.println("Running flow '" + flowToRun.getName() + "'...");
@@ -125,10 +123,13 @@ public class Main {
         boolean running = true;
         long start = System.currentTimeMillis();
         while (running) {
+            final int delay = delayTimeMs;
             executor.execute(new Runnable() {
                 @Override
                 public void run() {
                     try {
+                        Thread.sleep(random.nextInt(delay));
+
                         long duration = flow.run();
                         hitsCount.incrementAndGet();
                         responseTime.addAndGet(duration);
@@ -138,33 +139,35 @@ public class Main {
                             longestCall.set(duration);
                     } catch (Exception e) {
                         errorCount.incrementAndGet();
-                        e.printStackTrace();
                     }
                 }
             });
-            if (System.currentTimeMillis() - start > testTimeMs)
+            if (System.currentTimeMillis() - start > testTimeMs) {
                 running = false;
-            Thread.sleep(random.nextInt(delayTimeMs));
+            }
+            Thread.sleep(10);
             cycles++;
         }
-        executor.shutdown();
-        while (!executor.isTerminated()) {
-        }
         long end = System.currentTimeMillis();
+        executor.shutdownNow();
+        executor.awaitTermination(10, TimeUnit.SECONDS);
 
         Report report = new Report();
         report.environment = Environments.get();
         report.flow = flowToRun;
         report.hits = hitsCount.get();
         report.threads = threadCount;
-        report.availability = (1f - errorCount.get() / cycles) * 100;
+        report.availability = (1f - (float) errorCount.get() / (float) cycles) * 100f;
         report.elapsedTime = (end - start) / 1000f;
         report.averageRT = (responseTime.get() / cycles) / 1000f;
         report.shortestRT = shortestCall.get() / 1000f;
         report.longestRT = longestCall.get() / 1000f;
         report.successfulCalls = cycles - errorCount.get();
         report.failedCalls = errorCount.get();
+        report.hitsPerSeconds = report.hits /report.elapsedTime;
         printReport(report);
+
+        System.exit(0);
     }
 
     private static void printReport(Report report) {
@@ -173,6 +176,7 @@ public class Main {
         System.out.println(MessageFormat.format("Environment: \t\t {0}", report.environment));
         System.out.println(MessageFormat.format("Flow: \t\t\t {0}", report.flow.getName()));
         System.out.println(MessageFormat.format("Hits: \t\t\t {0}", report.hits));
+        System.out.println(MessageFormat.format("Hits/sec: \t\t {0}", report.hitsPerSeconds));
         System.out.println(MessageFormat.format("Threads: \t\t {0}", report.threads));
         System.out.println(MessageFormat.format("Availability: \t\t {0}%", report.availability));
         System.out.println(MessageFormat.format("Elapsed Time: \t\t {0} secs", report.elapsedTime));
@@ -193,6 +197,7 @@ public class Main {
         String environment;
         Flow flow;
         int hits;
+        float hitsPerSeconds;
         int threads;
         float availability;
         float elapsedTime;
