@@ -119,8 +119,6 @@ public class Main {
                 // Do nothing
             }
         }
-
-        printReport();
         System.exit(0);
     }
 
@@ -182,7 +180,7 @@ public class Main {
         float elapsedTime = (System.currentTimeMillis() - start) / 1000f;
         executor.shutdownNow();
         try {
-            executor.awaitTermination(10, TimeUnit.SECONDS);
+            executor.awaitTermination(8, TimeUnit.SECONDS);
         } catch (InterruptedException ie) {
             // Do nothing
         }
