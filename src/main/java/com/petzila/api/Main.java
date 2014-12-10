@@ -33,6 +33,7 @@ public class Main {
                 flows.put(flow.getName(), flow);
             } catch (InstantiationException | IllegalAccessException e) {
                 e.printStackTrace();
+                System.exit(-1);
             }
         }
     }
@@ -124,22 +125,19 @@ public class Main {
         long start = System.currentTimeMillis();
         while (running) {
             final int delay = delayTimeMs;
-            executor.execute(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        Thread.sleep(random.nextInt(delay));
+            executor.execute(() -> {
+                try {
+                    Thread.sleep(random.nextInt(delay));
 
-                        long duration = flow.run();
-                        hitsCount.incrementAndGet();
-                        responseTime.addAndGet(duration);
-                        if (duration < shortestCall.get())
-                            shortestCall.set(duration);
-                        if (duration > longestCall.get())
-                            longestCall.set(duration);
-                    } catch (Exception e) {
-                        errorCount.incrementAndGet();
-                    }
+                    long duration = flow.run();
+                    hitsCount.incrementAndGet();
+                    responseTime.addAndGet(duration);
+                    if (duration < shortestCall.get())
+                        shortestCall.set(duration);
+                    if (duration > longestCall.get())
+                        longestCall.set(duration);
+                } catch (Exception e) {
+                    errorCount.incrementAndGet();
                 }
             });
             if (System.currentTimeMillis() - start > testTimeMs) {
