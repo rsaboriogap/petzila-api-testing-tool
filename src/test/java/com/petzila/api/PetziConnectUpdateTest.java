@@ -8,6 +8,8 @@ import com.petzila.api.model.response.UserLoginResponse;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.UUID;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -15,7 +17,7 @@ import static org.junit.Assert.assertNotNull;
  * Created by rsaborio on 09/12/14.
  */
 public class PetziConnectUpdateTest {
-    private static final String PZC_ID = "38:60:77:38:bd:f0";
+    private static final String PZC_ID = UUID.randomUUID().toString();
     private static final String PZC_NAME = "Test device";
     private static final String PZC_NAME_UPDATED = "Test device - updated";
     private String userKey;

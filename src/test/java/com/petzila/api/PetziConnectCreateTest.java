@@ -33,7 +33,7 @@ public class PetziConnectCreateTest {
         userKey1 = userLoginResponse.data.token;
 
         login.email = "lema017@gmail.com";
-        login.password = "clarodeluna";
+        login.password = "password";
         userLoginResponse = Petzila.UserAPI.login(login);
         userKey2 = userLoginResponse.data.token;
     }

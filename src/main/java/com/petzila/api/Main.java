@@ -9,6 +9,7 @@ import java.text.MessageFormat;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -33,6 +34,7 @@ public class Main {
                 flows.put(flow.getName(), flow);
             } catch (InstantiationException | IllegalAccessException e) {
                 e.printStackTrace();
+                System.exit(-1);
             }
         }
     }
@@ -48,16 +50,84 @@ public class Main {
         options.addOption(new Option("f", true, "Flow to run."));
     }
 
+    // For reporting
+    private static AtomicInteger errorCount = new AtomicInteger();
+    private static AtomicInteger hitsCount = new AtomicInteger();
+    private static AtomicLong responseTime = new AtomicLong();
+    private static AtomicLong shortestCall = new AtomicLong(Long.MAX_VALUE);
+    private static AtomicLong longestCall = new AtomicLong();
+
+    private static ExecutorService executor;
+    private static Flow flow;
+    private static int cycles;
+    private static long start;
+    private static int threadCount = DEFAULT_THREAD_COUNT;
+    private static int testTimeMs = DEFAULT_TEST_TIME_MS;
+    private static int delayTimeMs = DEFAULT_DELAY_TIME_MS;
+
     public static void main(String[] args) throws Exception {
+        // Parse Command-Line Interface args
+        parseCLIArgs(args);
+
+        // Crtl+C hook
+        Runtime.getRuntime().addShutdownHook(new Thread("shutdown-hook") {
+            @Override
+            public void run() {
+                printReport();
+            }
+        });
+
+        // Create N concurrent threads
+        System.out.println("Preparing " + threadCount + " concurrent users...");
+        executor = Executors.newFixedThreadPool(threadCount);
+
+        // Initialize Flow to run
+        System.out.println("Running flow '" + flow.getName() + "'...");
+        flow.init();
+
+        // Start test
+        final Random random = new Random();
+        System.out.println("Starting tests...");
+        boolean running = true;
+        start = System.currentTimeMillis();
+        while (running) {
+            try {
+                executor.execute(() -> {
+                    try {
+                        Thread.sleep(random.nextInt(delayTimeMs));
+
+                        long duration = flow.run();
+                        hitsCount.incrementAndGet();
+                        responseTime.addAndGet(duration);
+                        if (duration < shortestCall.get())
+                            shortestCall.set(duration);
+                        if (duration > longestCall.get())
+                            longestCall.set(duration);
+                    } catch (InterruptedException e) {
+                        // do nothing
+                    } catch (Exception e) {
+                        errorCount.incrementAndGet();
+                    }
+                });
+                if (System.currentTimeMillis() - start > testTimeMs) {
+                    running = false;
+                } else {
+                    Thread.sleep(10);
+                }
+                cycles++;
+            } catch (RejectedExecutionException ree) {
+                // Do nothing
+            }
+        }
+        System.exit(0);
+    }
+
+    private static void parseCLIArgs(String... args) throws ParseException {
         CommandLineParser parser = new BasicParser();
         CommandLine cmd = parser.parse(options, args);
 
-        int threadCount = DEFAULT_THREAD_COUNT;
-        int testTimeMs = DEFAULT_TEST_TIME_MS;
-        int delayTimeMs = DEFAULT_DELAY_TIME_MS;
-        Flow flowToRun = null;
         if (cmd.hasOption('h')) {
-            printHelp();
+            printHelpAndExit();
         }
         if (cmd.hasOption('u')) {
             threadCount = Integer.parseInt(cmd.getOptionValue('u'));
@@ -79,7 +149,7 @@ public class Main {
                 }
             } catch (Exception e) {
                 System.err.println("Invalid -t option: " + t);
-                printHelp();
+                printHelpAndExit();
             }
         }
         if (cmd.hasOption('e')) {
@@ -97,114 +167,43 @@ public class Main {
             System.exit(0);
         }
         if (cmd.hasOption('f')) {
-            flowToRun = flows.get(cmd.getOptionValue('f'));
+            flow = flows.get(cmd.getOptionValue('f'));
         }
 
-        if (flowToRun == null) {
+        if (flow == null) {
             System.err.println("Invalid -f option - Flow wasn't specified");
-            printHelp();
+            printHelpAndExit();
         }
+    }
 
-        final AtomicInteger errorCount = new AtomicInteger();
-        final AtomicInteger hitsCount = new AtomicInteger();
-        final AtomicLong responseTime = new AtomicLong();
-        final AtomicLong shortestCall = new AtomicLong(Long.MAX_VALUE);
-        final AtomicLong longestCall = new AtomicLong();
-
-        System.out.println("Preparing " + threadCount + " concurrent users...");
-        ExecutorService executor = Executors.newFixedThreadPool(threadCount);
-        System.out.println("Running flow '" + flowToRun.getName() + "'...");
-        flowToRun.init();
-
-        final Random random = new Random();
-        final Flow flow = flowToRun;
-        System.out.println("Starting tests...");
-        int cycles = 0;
-        boolean running = true;
-        long start = System.currentTimeMillis();
-        while (running) {
-            final int delay = delayTimeMs;
-            executor.execute(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        Thread.sleep(random.nextInt(delay));
-
-                        long duration = flow.run();
-                        hitsCount.incrementAndGet();
-                        responseTime.addAndGet(duration);
-                        if (duration < shortestCall.get())
-                            shortestCall.set(duration);
-                        if (duration > longestCall.get())
-                            longestCall.set(duration);
-                    } catch (Exception e) {
-                        errorCount.incrementAndGet();
-                    }
-                }
-            });
-            if (System.currentTimeMillis() - start > testTimeMs) {
-                running = false;
-            }
-            Thread.sleep(10);
-            cycles++;
-        }
-        long end = System.currentTimeMillis();
+    private static void printReport() {
+        float elapsedTime = (System.currentTimeMillis() - start) / 1000f;
         executor.shutdownNow();
-        executor.awaitTermination(10, TimeUnit.SECONDS);
+        try {
+            executor.awaitTermination(8, TimeUnit.SECONDS);
+        } catch (InterruptedException ie) {
+            // Do nothing
+        }
 
-        Report report = new Report();
-        report.environment = Environments.get();
-        report.flow = flowToRun;
-        report.hits = hitsCount.get();
-        report.threads = threadCount;
-        report.availability = (1f - (float) errorCount.get() / (float) cycles) * 100f;
-        report.elapsedTime = (end - start) / 1000f;
-        report.averageRT = (responseTime.get() / cycles) / 1000f;
-        report.shortestRT = shortestCall.get() / 1000f;
-        report.longestRT = longestCall.get() / 1000f;
-        report.successfulCalls = cycles - errorCount.get();
-        report.failedCalls = errorCount.get();
-        report.hitsPerSeconds = report.hits /report.elapsedTime;
-        printReport(report);
-
-        System.exit(0);
-    }
-
-    private static void printReport(Report report) {
         System.out.println();
         System.out.println();
-        System.out.println(MessageFormat.format("Environment: \t\t {0}", report.environment));
-        System.out.println(MessageFormat.format("Flow: \t\t\t {0}", report.flow.getName()));
-        System.out.println(MessageFormat.format("Hits: \t\t\t {0}", report.hits));
-        System.out.println(MessageFormat.format("Hits/sec: \t\t {0}", report.hitsPerSeconds));
-        System.out.println(MessageFormat.format("Threads: \t\t {0}", report.threads));
-        System.out.println(MessageFormat.format("Availability: \t\t {0}%", report.availability));
-        System.out.println(MessageFormat.format("Elapsed Time: \t\t {0} secs", report.elapsedTime));
-        System.out.println(MessageFormat.format("Average RT: \t\t {0} secs", report.averageRT));
-        System.out.println(MessageFormat.format("Shortest RT: \t\t {0} secs", report.shortestRT));
-        System.out.println(MessageFormat.format("Longest RT: \t\t {0} secs", report.longestRT));
-        System.out.println(MessageFormat.format("Successful Calls: \t {0}", report.successfulCalls));
-        System.out.println(MessageFormat.format("Failed Calls: \t\t {0}", report.failedCalls));
+        System.out.println(MessageFormat.format("Environment: \t\t {0}", Environments.get()));
+        System.out.println(MessageFormat.format("Flow: \t\t\t {0}", flow.getName()));
+        System.out.println(MessageFormat.format("Hits: \t\t\t {0}", hitsCount.get()));
+        System.out.println(MessageFormat.format("Hits/sec: \t\t {0}", hitsCount.get() / elapsedTime));
+        System.out.println(MessageFormat.format("Threads: \t\t {0}", threadCount));
+        System.out.println(MessageFormat.format("Availability: \t\t {0}%", (1f - (float) errorCount.get() / (float) cycles) * 100f));
+        System.out.println(MessageFormat.format("Elapsed Time: \t\t {0} secs", elapsedTime));
+        System.out.println(MessageFormat.format("Average RT: \t\t {0} secs", (responseTime.get() / cycles) / 1000f));
+        System.out.println(MessageFormat.format("Shortest RT: \t\t {0} secs", shortestCall.get() / 1000f));
+        System.out.println(MessageFormat.format("Longest RT: \t\t {0} secs", longestCall.get() / 1000f));
+        System.out.println(MessageFormat.format("Successful Calls: \t {0}", cycles - errorCount.get()));
+        System.out.println(MessageFormat.format("Failed Calls: \t\t {0}", errorCount.get()));
     }
 
-    private static void printHelp() {
+    private static void printHelpAndExit() {
         HelpFormatter formatter = new HelpFormatter();
         formatter.printHelp("patt", options);
         System.exit(0);
-    }
-
-    static class Report {
-        String environment;
-        Flow flow;
-        int hits;
-        float hitsPerSeconds;
-        int threads;
-        float availability;
-        float elapsedTime;
-        float averageRT;
-        float longestRT;
-        float shortestRT;
-        int successfulCalls;
-        int failedCalls;
     }
 }
