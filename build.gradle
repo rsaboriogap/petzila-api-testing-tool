@@ -40,7 +40,6 @@ dependencies {
     compile "commons-cli:commons-cli:$commonsCli"
     compile "org.apache.commons:commons-lang3:$commonsLang3"
     compile "com.google.guava:guava:$guava"
-    compile "com.google.guava:guava:$guava"
     compile "org.reflections:reflections:$reflections"
 }
 
