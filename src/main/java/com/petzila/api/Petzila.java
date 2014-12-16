@@ -184,7 +184,7 @@ public final class Petzila {
         }
 
         public static PetEditProfileResponse updateProfilePicture(String postId, String userKey) {
-            return call(MessageFormat.format("/post/{0}/profile", postId), METHOD_POST, userKey, PetEditProfileResponse.class);
+            return call(MessageFormat.format("/post/{0}/profile", postId), METHOD_PUT, userKey, Empty.EMPTY, PetEditProfileResponse.class);
         }
     }
 
