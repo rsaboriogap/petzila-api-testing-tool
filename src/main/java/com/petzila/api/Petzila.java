@@ -17,6 +17,7 @@ import javax.ws.rs.client.*;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.*;
 import java.io.File;
+import java.io.PrintStream;
 import java.text.MessageFormat;
 
 /**
@@ -77,7 +78,8 @@ public final class Petzila {
 
         String logLevel = Utils.getProperty("api.loglevel");
         if (logLevel.equals("basic") || logLevel.equals("full")) {
-            System.out.println(MessageFormat.format("HTTP/{0} {1}   {2} secs\t {3} bytes  ->  {4} {5}",
+            PrintStream ps = apiResponse != null ? System.out : System.err;
+            ps.println(MessageFormat.format("HTTP/{0} {1}   {2} secs\t {3} bytes  ->  {4} {5}",
                     "1.1", //@TODO obtener la version de los headers
                     response.getStatus(),
                     (end - start) / 1000f,
@@ -86,11 +88,11 @@ public final class Petzila {
                     path));
             if (logLevel.equals("full")) {
                 if (userKey != null)
-                    System.out.println(MessageFormat.format("  -- User Key: {0}", userKey));
+                    ps.println(MessageFormat.format("  -- User Key: {0}", userKey));
                 if (entity != null)
-                    System.out.println(MessageFormat.format("  -- Body: {0}", entity));
+                    ps.println(MessageFormat.format("  -- Body: {0}", entity));
                 if (apiResponse != null) {
-                    System.out.println(MessageFormat.format("  -- Response: {0}", apiResponse));
+                    ps.println(MessageFormat.format("  -- Response: {0}", apiResponse));
                 }
             }
         }
@@ -179,6 +181,10 @@ public final class Petzila {
 
         public static PostCommentCreateResponse createComment(Comment comment, String userKey) {
             return call("/post/comment", METHOD_POST, userKey, comment, PostCommentCreateResponse.class);
+        }
+
+        public static PetEditProfileResponse updateProfilePicture(String postId, String userKey) {
+            return call(MessageFormat.format("/post/{0}/profile", postId), METHOD_POST, userKey, PetEditProfileResponse.class);
         }
     }
 
