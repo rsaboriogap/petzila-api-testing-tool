@@ -62,7 +62,7 @@ public class PostProfilePictureUpdateTest {
     }
 
     @Test
-    public void testPostCommentCreateHappyPath() {
+    public void testPostProfilePictureUpdateHappyPath() {
         PetGetResponse petGetResponse = Petzila.PetAPI.get(petId);
         assertNotNull(petGetResponse);
         assertEquals(petGetResponse.status, "Success");
