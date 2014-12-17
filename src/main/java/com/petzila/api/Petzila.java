@@ -19,6 +19,8 @@ import javax.ws.rs.core.*;
 import java.io.File;
 import java.io.PrintStream;
 import java.text.MessageFormat;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by rsaborio on 20/11/14.
@@ -59,8 +61,15 @@ public final class Petzila {
                 .register(MultiPartFeature.class);
     }
 
-    private static <T extends Response, E> T call(String path, String method, String userKey, E entity, MediaType mediaType, Class<T> responseClass) {
-        Invocation.Builder builder = target
+    private static <T extends Response, E> T call(String path, Map<String, String> queryParams, String method, String userKey, E entity, MediaType mediaType, Class<T> responseClass) {
+        WebTarget wb = target;
+        if (queryParams != null) {
+            for (Map.Entry<String, String> entry : queryParams.entrySet()) {
+                wb = wb.queryParam(entry.getKey(), entry.getValue());
+            }
+        }
+
+        Invocation.Builder builder = wb
                 .path(path)
                 .request()
                 .header(HEADER_VERSION, PETZILA_API_VERSION);
@@ -103,19 +112,23 @@ public final class Petzila {
     }
 
     private static <T extends Response, E extends com.petzila.api.model.Entity> T call(String path, String method, E entity, Class<T> responseClass) {
-        return call(path, method, null, entity, MediaType.APPLICATION_JSON_TYPE, responseClass);
+        return call(path, null, method, null, entity, MediaType.APPLICATION_JSON_TYPE, responseClass);
     }
 
     private static <T extends Response, E extends com.petzila.api.model.Entity> T call(String path, String method, String userKey, E entity, Class<T> responseClass) {
-        return call(path, method, userKey, entity, MediaType.APPLICATION_JSON_TYPE, responseClass);
+        return call(path, null, method, userKey, entity, MediaType.APPLICATION_JSON_TYPE, responseClass);
     }
 
     private static <T extends Response> T call(String path, String method, Class<T> responseClass) {
-        return call(path, method, null, null, MediaType.APPLICATION_JSON_TYPE, responseClass);
+        return call(path, null, method, null, null, MediaType.APPLICATION_JSON_TYPE, responseClass);
+    }
+
+    private static <T extends Response> T call(String path, Map<String, String> queryParams, String method, Class<T> responseClass) {
+        return call(path, queryParams, method, null, null, MediaType.APPLICATION_JSON_TYPE, responseClass);
     }
 
     private static <T extends Response> T call(String path, String method, String userKey, Class<T> responseClass) {
-        return call(path, method, userKey, null, MediaType.APPLICATION_JSON_TYPE, responseClass);
+        return call(path, null, method, userKey, null, MediaType.APPLICATION_JSON_TYPE, responseClass);
     }
 
     public static final class UserAPI {
@@ -154,11 +167,25 @@ public final class Petzila {
         public static PetCreateResponse create(Pet pet, String userKey) {
             return call("/pet", METHOD_POST, userKey, pet, PetCreateResponse.class);
         }
+
+        public static PetUpdateResponse update(Pet pet, String petId, String userKey) {
+            return call(MessageFormat.format("/pet/{0}/edit", petId), METHOD_PUT, userKey, pet, PetUpdateResponse.class);
+        }
     }
 
     public static final class PostAPI {
         public static PostGetResponse get() {
             return call("/post", METHOD_GET, PostGetResponse.class);
+        }
+
+        public static PostGetStreamResponse getStream(String stream, String userId) {
+            Map<String, String> queryParams = new HashMap<>();
+            queryParams.put("userid", userId);
+            return call(MessageFormat.format("/post/{0}", stream), queryParams, METHOD_GET, PostGetStreamResponse.class);
+        }
+
+        public static PostGetStreamResponse getMyPets(String userId) {
+            return getStream("myPets", userId);
         }
 
         public static PostCreateResponse create(Post post, String userKey) {
@@ -172,7 +199,7 @@ public final class Petzila {
             form.field("replacePetProfilePicture", String.valueOf(post.replacePetProfilePicture));
             form.bodyPart(new FileDataBodyPart("media", media));
 
-            return Petzila.call("/post/binary", METHOD_POST, userKey, form, MediaType.MULTIPART_FORM_DATA_TYPE, PostCreateResponse.class);
+            return Petzila.call("/post/binary", null, METHOD_POST, userKey, form, MediaType.MULTIPART_FORM_DATA_TYPE, PostCreateResponse.class);
         }
 
         public static PostCreateResponse createBase64(Post post, String userKey) {
@@ -183,8 +210,8 @@ public final class Petzila {
             return call("/post/comment", METHOD_POST, userKey, comment, PostCommentCreateResponse.class);
         }
 
-        public static PetEditProfileResponse updateProfilePicture(String postId, String userKey) {
-            return call(MessageFormat.format("/post/{0}/profile", postId), METHOD_PUT, userKey, Empty.EMPTY, PetEditProfileResponse.class);
+        public static PetUpdateResponse updateProfilePicture(String postId, String userKey) {
+            return call(MessageFormat.format("/post/{0}/profile", postId), METHOD_PUT, userKey, Empty.EMPTY, PetUpdateResponse.class);
         }
     }
 
@@ -193,7 +220,7 @@ public final class Petzila {
             FormDataMultiPart form = new FormDataMultiPart();
             form.bodyPart(new FileDataBodyPart("media", media.media));
 
-            return Petzila.call("/media/upload", METHOD_POST, userKey, form, MediaType.MULTIPART_FORM_DATA_TYPE, MediaUploadResponse.class);
+            return Petzila.call("/media/upload", null, METHOD_POST, userKey, form, MediaType.MULTIPART_FORM_DATA_TYPE, MediaUploadResponse.class);
         }
     }
 }

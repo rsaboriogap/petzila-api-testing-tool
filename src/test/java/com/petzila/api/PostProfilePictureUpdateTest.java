@@ -68,22 +68,22 @@ public class PostProfilePictureUpdateTest {
         assertEquals(petGetResponse.status, "Success");
         assertEquals(petGetResponse.data.pet.profilePicture, petCreateResponse.data.profilePicture);
 
-        PetEditProfileResponse petEditProfileResponse = Petzila.PostAPI.updateProfilePicture(postResponse1.data.id, userKey);
+        PetUpdateResponse petUpdateResponse = Petzila.PostAPI.updateProfilePicture(postResponse1.data.id, userKey);
 
-        assertNotNull(petEditProfileResponse);
-        assertEquals(petEditProfileResponse.status, "Success");
-        assertEquals(petEditProfileResponse.data.profilePicture, postResponse1.data.postPicture);
+        assertNotNull(petUpdateResponse);
+        assertEquals(petUpdateResponse.status, "Success");
+        assertEquals(petUpdateResponse.data.profilePicture, postResponse1.data.postPicture);
 
         petGetResponse = Petzila.PetAPI.get(petId);
         assertNotNull(petGetResponse);
         assertEquals(petGetResponse.status, "Success");
         assertEquals(petGetResponse.data.pet.profilePicture, postResponse1.data.postPicture);
 
-        petEditProfileResponse = Petzila.PostAPI.updateProfilePicture(postResponse2.data.id, userKey);
+        petUpdateResponse = Petzila.PostAPI.updateProfilePicture(postResponse2.data.id, userKey);
 
-        assertNotNull(petEditProfileResponse);
-        assertEquals(petEditProfileResponse.status, "Success");
-        assertEquals(petEditProfileResponse.data.profilePicture, postResponse2.data.postPicture);
+        assertNotNull(petUpdateResponse);
+        assertEquals(petUpdateResponse.status, "Success");
+        assertEquals(petUpdateResponse.data.profilePicture, postResponse2.data.postPicture);
 
         petGetResponse = Petzila.PetAPI.get(petId);
         assertNotNull(petGetResponse);

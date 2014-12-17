@@ -5,7 +5,7 @@ import com.google.common.base.MoreObjects;
 /**
  * Created by rsaborio on 02/12/14.
  */
-public final class PetEditProfileResponse extends Response {
+public final class PetUpdateResponse extends Response {
     public Data data;
 
     public static class Data {
