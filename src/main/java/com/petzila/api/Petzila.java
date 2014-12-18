@@ -61,12 +61,17 @@ public final class Petzila {
                 .register(MultiPartFeature.class);
     }
 
-    private static <T extends Response, E> T call(String path, Map<String, String> queryParams, String method, String userKey, E entity, MediaType mediaType, Class<T> responseClass) {
+    private static <T extends Response, E> T call(String path, Map<String, ?> queryParams, String method, String userKey, E entity, MediaType mediaType, Class<T> responseClass) {
+        String query = "?";
         WebTarget wb = target;
-        if (queryParams != null) {
-            for (Map.Entry<String, String> entry : queryParams.entrySet()) {
+        if (queryParams != null && !queryParams.isEmpty()) {
+            for (Map.Entry<String, ?> entry : queryParams.entrySet()) {
                 wb = wb.queryParam(entry.getKey(), entry.getValue());
+                query += entry.getKey() + "=" + entry.getValue() + "&";
             }
+        }
+        if (query.endsWith("&")) {
+            query = query.substring(0, query.length() - 1);
         }
 
         Invocation.Builder builder = wb
@@ -94,7 +99,7 @@ public final class Petzila {
                     (end - start) / 1000f,
                     response.getLength(),
                     method,
-                    path));
+                    path + (query.length() > 1 ? query : "")));
             if (logLevel.equals("full")) {
                 if (userKey != null)
                     ps.println(MessageFormat.format("  -- User Key: {0}", userKey));
@@ -123,12 +128,16 @@ public final class Petzila {
         return call(path, null, method, null, null, MediaType.APPLICATION_JSON_TYPE, responseClass);
     }
 
-    private static <T extends Response> T call(String path, Map<String, String> queryParams, String method, Class<T> responseClass) {
+    private static <T extends Response> T call(String path, Map<String, ?> queryParams, String method, Class<T> responseClass) {
         return call(path, queryParams, method, null, null, MediaType.APPLICATION_JSON_TYPE, responseClass);
     }
 
     private static <T extends Response> T call(String path, String method, String userKey, Class<T> responseClass) {
         return call(path, null, method, userKey, null, MediaType.APPLICATION_JSON_TYPE, responseClass);
+    }
+
+    private static <T extends Response> T call(String path, Map<String, ?> queryParams, String method, String userKey, Class<T> responseClass) {
+        return call(path, queryParams, method, userKey, null, MediaType.APPLICATION_JSON_TYPE, responseClass);
     }
 
     public static final class UserAPI {
@@ -142,6 +151,21 @@ public final class Petzila {
 
         public static UserDeviceGetResponse getDevices(String userKey, String userId) {
             return call(MessageFormat.format("/user/{0}/devices", userId), METHOD_GET, userKey, UserDeviceGetResponse.class);
+        }
+
+        public static UserNotificationGetResponse getNotifications(String userKey) {
+            return getNotifications(userKey, null, null);
+        }
+
+        public static UserNotificationGetResponse getNotifications(String userKey, Integer index, Integer count) {
+            Map<String, Integer> queryParams = new HashMap<>();
+            if (index != null) {
+                queryParams.put("index", index);
+            }
+            if (count != null) {
+                queryParams.put("count", count);
+            }
+            return call("/user/notifications", queryParams, METHOD_GET, userKey, UserNotificationGetResponse.class);
         }
     }
 
