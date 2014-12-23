@@ -66,7 +66,7 @@ public class PostUpdateTest {
         assertNotNull(petUpdateResponse);
         assertEquals(petUpdateResponse.status, "Success");
 
-        Thread.sleep(1000); // backend works with update-queues so we have to wait while it finishes :/
+        Thread.sleep(2000); // backend works with update-queues so we have to wait while it finishes :/
 
         postGetStreamResponse = Petzila.PostAPI.getMyPets(userId);
         assertNotNull(postGetStreamResponse);
