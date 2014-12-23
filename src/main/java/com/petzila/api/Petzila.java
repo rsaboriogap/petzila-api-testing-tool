@@ -174,12 +174,16 @@ public final class Petzila {
             return call(MessageFormat.format("/petziConnect/{0}", petziId), METHOD_GET, PetziConnectGetResponse.class);
         }
 
+        public static PetziConnectCreateResponse create(PetziConnect petziConnect, String petziId, String userKey) {
+            return call(MessageFormat.format("/petziConnect/registration/{0}", petziId), METHOD_POST, userKey, petziConnect, PetziConnectCreateResponse.class);
+        }
+
         public static PetziConnectUpdateResponse update(PetziConnect petziConnect, String petziId, String userKey) {
             return call(MessageFormat.format("/petziConnect/{0}/edit", petziId), METHOD_PUT, userKey, petziConnect, PetziConnectUpdateResponse.class);
         }
 
-        public static PetziConnectCreateResponse create(PetziConnect petziConnect, String petziId, String userKey) {
-            return call(MessageFormat.format("/petziConnect/registration/{0}", petziId), METHOD_POST, userKey, petziConnect, PetziConnectCreateResponse.class);
+        public static PetziConnectDeleteResponse delete(String petziId, String userKey) {
+            return call(MessageFormat.format("/petziConnect/{0}", petziId), METHOD_DELETE, userKey, PetziConnectDeleteResponse.class);
         }
     }
 
