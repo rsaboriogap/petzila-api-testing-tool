@@ -31,8 +31,24 @@ If you want 20 concurrent users to call during 1 minute the flow that lists all 
 
     you@yourmachine:/path/to/patt$ java -jar build/libs/patt.jar -e qa -t 1m -u 20 -f post-get-flow
 
+Flows
+=====
+What is a Flow? It's basically a set of operations you want to perform on Petzila API. For instance, this could be a flow:
+
+  * Login using John Doe credentials
+  * Create a new pet
+  * Create a new post with that pet
+  * Create a new comment on that post
+
+Flows are under the /com/petzila/api/flow package. You need to know Java programming to create new flows but don't worry.
+They are pretty straightforward to implement.
+
+
 Listing Flows
 =============
 To list all registered Flows run:
 
     you@yourmachine:/path/to/patt$ java -jar build/libs/patt.jar -l
+
+
+If you think this tool is useful to you buy Randy Saborio a beer.
