@@ -140,51 +140,8 @@ public final class Petzila {
         return call(path, queryParams, method, userKey, null, MediaType.APPLICATION_JSON_TYPE, responseClass);
     }
 
-    public static final class UserAPI {
-        public static UserLoginResponse login(Login login) {
-            return call("/user/login", METHOD_POST, login, UserLoginResponse.class);
-        }
-
-        public static UserSignUpResponse signup(SignUp signUp) {
-            return call("/user/signup", METHOD_POST, signUp, UserSignUpResponse.class);
-        }
-
-        public static UserDeviceGetResponse getDevices(String userKey, String userId) {
-            return call(MessageFormat.format("/user/{0}/devices", userId), METHOD_GET, userKey, UserDeviceGetResponse.class);
-        }
-
-        public static UserNotificationGetResponse getNotifications(String userKey) {
-            return getNotifications(userKey, null, null);
-        }
-
-        public static UserNotificationGetResponse getNotifications(String userKey, Integer index, Integer count) {
-            Map<String, Integer> queryParams = new HashMap<>();
-            if (index != null) {
-                queryParams.put("index", index);
-            }
-            if (count != null) {
-                queryParams.put("count", count);
-            }
-            return call("/user/notifications", queryParams, METHOD_GET, userKey, UserNotificationGetResponse.class);
-        }
-    }
-
-    public static final class PetziConnectAPI {
-        public static PetziConnectGetResponse get(String petziId) {
-            return call(MessageFormat.format("/petziConnect/{0}", petziId), METHOD_GET, PetziConnectGetResponse.class);
-        }
-
-        public static PetziConnectCreateResponse create(PetziConnect petziConnect, String petziId, String userKey) {
-            return call(MessageFormat.format("/petziConnect/registration/{0}", petziId), METHOD_POST, userKey, petziConnect, PetziConnectCreateResponse.class);
-        }
-
-        public static PetziConnectUpdateResponse update(PetziConnect petziConnect, String petziId, String userKey) {
-            return call(MessageFormat.format("/petziConnect/{0}/edit", petziId), METHOD_PUT, userKey, petziConnect, PetziConnectUpdateResponse.class);
-        }
-
-        public static PetziConnectDeleteResponse delete(String petziId, String userKey) {
-            return call(MessageFormat.format("/petziConnect/{0}", petziId), METHOD_DELETE, userKey, PetziConnectDeleteResponse.class);
-        }
+    public static final class AdminAPI {
+        //@TODO
     }
 
     public static final class PetAPI {
@@ -228,6 +185,35 @@ public final class Petzila {
         }
     }
 
+    public static final class UserAPI {
+        public static UserLoginResponse login(Login login) {
+            return call("/user/login", METHOD_POST, login, UserLoginResponse.class);
+        }
+
+        public static UserSignUpResponse signup(SignUp signUp) {
+            return call("/user/signup", METHOD_POST, signUp, UserSignUpResponse.class);
+        }
+
+        public static UserDeviceGetResponse getDevices(String userKey, String userId) {
+            return call(MessageFormat.format("/user/{0}/devices", userId), METHOD_GET, userKey, UserDeviceGetResponse.class);
+        }
+
+        public static UserNotificationGetResponse getNotifications(String userKey) {
+            return getNotifications(userKey, null, null);
+        }
+
+        public static UserNotificationGetResponse getNotifications(String userKey, Integer index, Integer count) {
+            Map<String, Integer> queryParams = new HashMap<>();
+            if (index != null) {
+                queryParams.put("index", index);
+            }
+            if (count != null) {
+                queryParams.put("count", count);
+            }
+            return call("/user/notifications", queryParams, METHOD_GET, userKey, UserNotificationGetResponse.class);
+        }
+    }
+
     public static final class PostAPI {
         public static PostGetResponse get() {
             return call("/post", METHOD_GET, PostGetResponse.class);
@@ -257,6 +243,7 @@ public final class Petzila {
             return Petzila.call("/post/binary", null, METHOD_POST, userKey, form, MediaType.MULTIPART_FORM_DATA_TYPE, PostCreateResponse.class);
         }
 
+        @Deprecated
         public static PostCreateResponse createBase64(Post post, String userKey) {
             return call("/post/base64", METHOD_POST, userKey, post, PostCreateResponse.class);
         }
@@ -276,6 +263,43 @@ public final class Petzila {
             form.bodyPart(new FileDataBodyPart("media", media.media));
 
             return Petzila.call("/media/upload", null, METHOD_POST, userKey, form, MediaType.MULTIPART_FORM_DATA_TYPE, MediaUploadResponse.class);
+        }
+    }
+
+    public static final class PetziConnectAPI {
+        public static PetziConnectGetResponse get(String petziId) {
+            return call(MessageFormat.format("/petziConnect/{0}", petziId), METHOD_GET, PetziConnectGetResponse.class);
+        }
+
+        public static PetziConnectUpdateResponse update(PetziConnect petziConnect, String petziId, String userKey) {
+            return call(MessageFormat.format("/petziConnect/{0}/edit", petziId), METHOD_PUT, userKey, petziConnect, PetziConnectUpdateResponse.class);
+        }
+
+        public static PetziConnectCreateResponse create(PetziConnect petziConnect, String petziId, String userKey) {
+            return call(MessageFormat.format("/petziConnect/registration/{0}", petziId), METHOD_POST, userKey, petziConnect, PetziConnectCreateResponse.class);
+        }
+
+        public static PetziConnectDeleteResponse delete(String petziId, String userKey) {
+            return call(MessageFormat.format("/petziConnect/{0}", petziId), METHOD_DELETE, userKey, PetziConnectDeleteResponse.class);
+        }
+    }
+
+    public static final class SearchAPI {
+        public static SearchGetResponse search(String keyword, String type) {
+            return search(keyword, type, null, null);
+        }
+
+        public static SearchGetResponse search(String keyword, String type, Integer index, Integer count) {
+            Map<String, String> queryParams = new HashMap<>();
+            queryParams.put("keyword", keyword);
+            queryParams.put("type", type);
+            if (index != null) {
+                queryParams.put("index", String.valueOf(index));
+            }
+            if (count != null) {
+                queryParams.put("count", String.valueOf(count));
+            }
+            return call("/search/usersPets", queryParams, METHOD_GET, SearchGetResponse.class);
         }
     }
 
