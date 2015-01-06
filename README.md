@@ -33,7 +33,8 @@ If you want 20 concurrent users to call during 1 minute the flow that lists all 
 
 Flows
 -----
-What is a Flow? It's basically a set of operations you want to perform on Petzila API. For instance, this could be a flow:
+What is a Flow? It's basically a set of operations you want to perform and test as a single unit on Petzila API.
+For instance, this could be a flow:
 
   * Login using John Doe credentials
   * Create a new pet
