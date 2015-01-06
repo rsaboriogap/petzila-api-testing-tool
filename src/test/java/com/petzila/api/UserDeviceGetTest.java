@@ -30,7 +30,7 @@ public class UserDeviceGetTest {
         PetziConnect petziConnect = new PetziConnect();
         petziConnect.pzcName = "Test device";
         petziConnect.isDefault = false;
-        Petzila.PetziConnectAPI.create(petziConnect, PZC_ID, userKey);
+        Petzila.PetziConnectAPI.register(petziConnect, PZC_ID, userKey);
     }
 
     @Test

@@ -37,7 +37,7 @@ public class PetziConnectUpdateTest {
         PetziConnect petziConnect = new PetziConnect();
         petziConnect.pzcName = PZC_NAME;
         petziConnect.isDefault = false;
-        PetziConnectCreateResponse petziConnectCreateResponse = Petzila.PetziConnectAPI.create(petziConnect, PZC_ID, userKey);
+        PetziConnectCreateResponse petziConnectCreateResponse = Petzila.PetziConnectAPI.register(petziConnect, PZC_ID, userKey);
 
         assertNotNull(petziConnectCreateResponse);
         assertEquals(petziConnectCreateResponse.status, "Success");

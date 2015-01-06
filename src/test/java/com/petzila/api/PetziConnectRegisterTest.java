@@ -19,7 +19,7 @@ import static org.junit.Assert.assertNotNull;
 /**
  * Created by rsaborio on 09/12/14.
  */
-public class PetziConnectCreateTest {
+public class PetziConnectRegisterTest {
     private String userKey1;
     private String userKey2;
 
@@ -39,13 +39,13 @@ public class PetziConnectCreateTest {
     }
 
     @Test
-    public void testCreatePetziConnectHappyPath() {
+    public void testRegisterPetziConnectHappyPath() {
         String pzcId = UUID.randomUUID().toString();
 
         PetziConnect petziConnect = new PetziConnect();
         petziConnect.pzcName = "Test device";
         petziConnect.isDefault = false;
-        PetziConnectCreateResponse response = Petzila.PetziConnectAPI.create(petziConnect, pzcId, userKey1);
+        PetziConnectCreateResponse response = Petzila.PetziConnectAPI.register(petziConnect, pzcId, userKey1);
 
         assertNotNull(response);
         assertEquals(response.status, "Success");
@@ -53,13 +53,13 @@ public class PetziConnectCreateTest {
     }
 
     @Test
-    public void testCreateTwoPetziConnectsWithSameIDAndSameOwner() {
+    public void testRegisterTwoPetziConnectsWithSameIDAndSameOwner() {
         String pzcId = UUID.randomUUID().toString();
 
         PetziConnect petziConnect = new PetziConnect();
         petziConnect.pzcName = "Test device";
         petziConnect.isDefault = false;
-        PetziConnectCreateResponse response = Petzila.PetziConnectAPI.create(petziConnect, pzcId, userKey1);
+        PetziConnectCreateResponse response = Petzila.PetziConnectAPI.register(petziConnect, pzcId, userKey1);
 
         assertNotNull(response);
         assertEquals(response.status, "Success");
@@ -69,7 +69,7 @@ public class PetziConnectCreateTest {
         petziConnect = new PetziConnect();
         petziConnect.pzcName = "Test device 2";
         petziConnect.isDefault = false;
-        response = Petzila.PetziConnectAPI.create(petziConnect, pzcId, userKey1);
+        response = Petzila.PetziConnectAPI.register(petziConnect, pzcId, userKey1);
 
         assertNotNull(response);
         assertEquals(response.status, "Success");
@@ -81,13 +81,13 @@ public class PetziConnectCreateTest {
     }
 
     @Test
-    public void testCreateTwoPetziConnectsWithSameIDAndDifferentOwners() {
+    public void testRegisterTwoPetziConnectsWithSameIDAndDifferentOwners() {
         String pzcId = UUID.randomUUID().toString();
 
         PetziConnect petziConnect = new PetziConnect();
         petziConnect.pzcName = "Test device";
         petziConnect.isDefault = false;
-        PetziConnectCreateResponse response = Petzila.PetziConnectAPI.create(petziConnect, pzcId, userKey1);
+        PetziConnectCreateResponse response = Petzila.PetziConnectAPI.register(petziConnect, pzcId, userKey1);
 
         assertNotNull(response);
         assertEquals(response.status, "Success");
@@ -97,7 +97,7 @@ public class PetziConnectCreateTest {
         petziConnect.pzcName = "Test device 2";
         petziConnect.isDefault = false;
         try {
-            Petzila.PetziConnectAPI.create(petziConnect, pzcId, userKey2);
+            Petzila.PetziConnectAPI.register(petziConnect, pzcId, userKey2);
         } catch (BadRequestException bre) {
             ErrorResponse error = bre.getResponse().readEntity(ErrorResponse.class);
             assertEquals("Invalid expected error code", 1038, error.code);

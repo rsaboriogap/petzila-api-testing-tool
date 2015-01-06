@@ -43,7 +43,7 @@ public class PetziConnectDeleteTest {
         petziConnect.pzcName = "Test device";
         petziConnect.isDefault = true;
 
-        PetziConnectCreateResponse petziConnectCreateResponse = Petzila.PetziConnectAPI.create(petziConnect, pzcId, userKey);
+        PetziConnectCreateResponse petziConnectCreateResponse = Petzila.PetziConnectAPI.register(petziConnect, pzcId, userKey);
         assertNotNull(petziConnectCreateResponse);
         assertEquals("Success", petziConnectCreateResponse.status);
         assertNotNull(petziConnectCreateResponse.data.hbsUrl);
