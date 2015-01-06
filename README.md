@@ -27,7 +27,7 @@ It should show you something like this:
      -t <arg>   Duration of test (s, m, h) eg. 1h = one hour test. Default = 1m.
      -u <arg>   Number of concurrent users. Default = 10.
 
-Let's suppose you want 20 concurrent users to call during 1 minute the flow that lists all posts in QA's environment:
+If you want 20 concurrent users to call during 1 minute the flow that lists all posts in QA's environment run:
 
     you@yourmachine:/path/to/patt$ java -jar build/libs/patt.jar -e qa -t 1m -u 20 -f post-get-flow
 
