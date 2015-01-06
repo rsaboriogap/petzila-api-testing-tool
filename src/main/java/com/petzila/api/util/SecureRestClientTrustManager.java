@@ -1,4 +1,6 @@
-package com.petzila.api.util; /**
+package com.petzila.api.util;
+
+/**
  * Created by rsaborio on 19/11/14.
  */
 import java.security.cert.CertificateException;
