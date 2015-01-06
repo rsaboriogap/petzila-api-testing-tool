@@ -52,4 +52,4 @@ To list all registered Flows run:
     you@yourmachine:/path/to/patt$ java -jar build/libs/patt.jar -l
 
 
-If you think this tool is useful to you buy Randy Saborio (rsaborio@wearegap.com) a beer.
+If you find this tool useful buy Randy Saborio (rsaborio@wearegap.com) a beer.
