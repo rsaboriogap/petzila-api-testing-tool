@@ -278,4 +278,10 @@ public final class Petzila {
             return Petzila.call("/media/upload", null, METHOD_POST, userKey, form, MediaType.MULTIPART_FORM_DATA_TYPE, MediaUploadResponse.class);
         }
     }
+
+    public static final class VersionsAPI {
+        public static VersionGetResponse get() {
+            return call("/versions", METHOD_GET, VersionGetResponse.class);
+        }
+    }
 }
