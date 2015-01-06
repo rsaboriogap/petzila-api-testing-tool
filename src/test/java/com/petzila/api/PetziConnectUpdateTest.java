@@ -2,7 +2,7 @@ package com.petzila.api;
 
 import com.petzila.api.model.Login;
 import com.petzila.api.model.PetziConnect;
-import com.petzila.api.model.response.PetziConnectCreateResponse;
+import com.petzila.api.model.response.PetziConnectRegisterResponse;
 import com.petzila.api.model.response.PetziConnectUpdateResponse;
 import com.petzila.api.model.response.UserLoginResponse;
 import org.junit.Before;
@@ -37,11 +37,11 @@ public class PetziConnectUpdateTest {
         PetziConnect petziConnect = new PetziConnect();
         petziConnect.pzcName = PZC_NAME;
         petziConnect.isDefault = false;
-        PetziConnectCreateResponse petziConnectCreateResponse = Petzila.PetziConnectAPI.register(petziConnect, PZC_ID, userKey);
+        PetziConnectRegisterResponse petziConnectRegisterResponse = Petzila.PetziConnectAPI.register(petziConnect, PZC_ID, userKey);
 
-        assertNotNull(petziConnectCreateResponse);
-        assertEquals(petziConnectCreateResponse.status, "Success");
-        assertNotNull(petziConnectCreateResponse.data.hbsUrl);
+        assertNotNull(petziConnectRegisterResponse);
+        assertEquals(petziConnectRegisterResponse.status, "Success");
+        assertNotNull(petziConnectRegisterResponse.data.hbsUrl);
 
         petziConnect.pzcName = PZC_NAME_UPDATED;
         petziConnect.isDefault = true;

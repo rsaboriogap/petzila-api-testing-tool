@@ -3,7 +3,7 @@ package com.petzila.api;
 import com.petzila.api.model.Login;
 import com.petzila.api.model.PetziConnect;
 import com.petzila.api.model.response.ErrorResponse;
-import com.petzila.api.model.response.PetziConnectCreateResponse;
+import com.petzila.api.model.response.PetziConnectRegisterResponse;
 import com.petzila.api.model.response.PetziConnectGetResponse;
 import com.petzila.api.model.response.UserLoginResponse;
 import org.junit.Before;
@@ -45,7 +45,7 @@ public class PetziConnectRegisterTest {
         PetziConnect petziConnect = new PetziConnect();
         petziConnect.pzcName = "Test device";
         petziConnect.isDefault = false;
-        PetziConnectCreateResponse response = Petzila.PetziConnectAPI.register(petziConnect, pzcId, userKey1);
+        PetziConnectRegisterResponse response = Petzila.PetziConnectAPI.register(petziConnect, pzcId, userKey1);
 
         assertNotNull(response);
         assertEquals(response.status, "Success");
@@ -59,7 +59,7 @@ public class PetziConnectRegisterTest {
         PetziConnect petziConnect = new PetziConnect();
         petziConnect.pzcName = "Test device";
         petziConnect.isDefault = false;
-        PetziConnectCreateResponse response = Petzila.PetziConnectAPI.register(petziConnect, pzcId, userKey1);
+        PetziConnectRegisterResponse response = Petzila.PetziConnectAPI.register(petziConnect, pzcId, userKey1);
 
         assertNotNull(response);
         assertEquals(response.status, "Success");
@@ -87,7 +87,7 @@ public class PetziConnectRegisterTest {
         PetziConnect petziConnect = new PetziConnect();
         petziConnect.pzcName = "Test device";
         petziConnect.isDefault = false;
-        PetziConnectCreateResponse response = Petzila.PetziConnectAPI.register(petziConnect, pzcId, userKey1);
+        PetziConnectRegisterResponse response = Petzila.PetziConnectAPI.register(petziConnect, pzcId, userKey1);
 
         assertNotNull(response);
         assertEquals(response.status, "Success");

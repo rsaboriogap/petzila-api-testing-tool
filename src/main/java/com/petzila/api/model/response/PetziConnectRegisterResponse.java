@@ -5,7 +5,7 @@ import com.google.common.base.MoreObjects;
 /**
  * Created by rsaborio on 19/11/14.
  */
-public final class PetziConnectCreateResponse extends Response {
+public final class PetziConnectRegisterResponse extends Response {
     public Data data;
 
     public static class Data {

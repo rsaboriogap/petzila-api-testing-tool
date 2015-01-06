@@ -279,8 +279,8 @@ public final class Petzila {
             return call(MessageFormat.format("/petziConnect/sessionStatus/{0}", petziId), METHOD_GET, userKey, PetziConnectSessionStatusGetResponse.class);
         }
 
-        public static PetziConnectCreateResponse register(PetziConnect petziConnect, String petziId, String userKey) {
-            return call(MessageFormat.format("/petziConnect/registration/{0}", petziId), METHOD_POST, userKey, petziConnect, PetziConnectCreateResponse.class);
+        public static PetziConnectRegisterResponse register(PetziConnect petziConnect, String petziId, String userKey) {
+            return call(MessageFormat.format("/petziConnect/registration/{0}", petziId), METHOD_POST, userKey, petziConnect, PetziConnectRegisterResponse.class);
         }
 
         public static PetziConnectDeleteResponse delete(String petziId, String userKey) {

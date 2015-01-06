@@ -2,7 +2,7 @@ package com.petzila.api;
 
 import com.petzila.api.model.Login;
 import com.petzila.api.model.PetziConnect;
-import com.petzila.api.model.response.PetziConnectCreateResponse;
+import com.petzila.api.model.response.PetziConnectRegisterResponse;
 import com.petzila.api.model.response.PetziConnectDeleteResponse;
 import com.petzila.api.model.response.PetziConnectGetResponse;
 import com.petzila.api.model.response.UserLoginResponse;
@@ -43,10 +43,10 @@ public class PetziConnectDeleteTest {
         petziConnect.pzcName = "Test device";
         petziConnect.isDefault = true;
 
-        PetziConnectCreateResponse petziConnectCreateResponse = Petzila.PetziConnectAPI.register(petziConnect, pzcId, userKey);
-        assertNotNull(petziConnectCreateResponse);
-        assertEquals("Success", petziConnectCreateResponse.status);
-        assertNotNull(petziConnectCreateResponse.data.hbsUrl);
+        PetziConnectRegisterResponse petziConnectRegisterResponse = Petzila.PetziConnectAPI.register(petziConnect, pzcId, userKey);
+        assertNotNull(petziConnectRegisterResponse);
+        assertEquals("Success", petziConnectRegisterResponse.status);
+        assertNotNull(petziConnectRegisterResponse.data.hbsUrl);
 
         petziConnectGetResponse = Petzila.PetziConnectAPI.get(pzcId);
         assertNotNull(petziConnectGetResponse);
