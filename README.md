@@ -5,13 +5,13 @@ Petzila API Testing Tool (known as patt), is a command-line stress-testing tool 
 Windows, and MAC OS. In order to run patt you need JDK 8+ installed in your system.
 
 Building patt
-=============
+-------------
 To build patt run the following command on a terminal:
 
     you@yourmachine:/path/to/patt$ ./gradlew clean shadow
 
 Running patt
-============
+------------
 To show patt's help execute the following command on a terminal:
 
     you@yourmachine:/path/to/patt$ java -jar build/libs/patt.jar -h
@@ -32,7 +32,7 @@ If you want 20 concurrent users to call during 1 minute the flow that lists all 
     you@yourmachine:/path/to/patt$ java -jar build/libs/patt.jar -e qa -t 1m -u 20 -f post-get-flow
 
 Flows
-=====
+-----
 What is a Flow? It's basically a set of operations you want to perform on Petzila API. For instance, this could be a flow:
 
   * Login using John Doe credentials
@@ -45,10 +45,10 @@ They are pretty straightforward to implement.
 
 
 Listing Flows
-=============
+-------------
 To list all registered Flows run:
 
     you@yourmachine:/path/to/patt$ java -jar build/libs/patt.jar -l
 
 
-If you think this tool is useful to you buy Randy Saborio a beer.
+If you think this tool is useful to you buy Randy Saborio (rsaborio@wearegap.com) a beer.
