@@ -192,12 +192,39 @@ public final class Petzila {
             return call(MessageFormat.format("/pet/{0}", petId), METHOD_GET, PetGetResponse.class);
         }
 
+        public static PetDeleteResponse delete(String petId) {
+            return call(MessageFormat.format("/pet/{0}", petId), METHOD_DELETE, PetDeleteResponse.class);
+        }
+
         public static PetCreateResponse create(Pet pet, String userKey) {
             return call("/pet", METHOD_POST, userKey, pet, PetCreateResponse.class);
         }
 
         public static PetUpdateResponse update(Pet pet, String petId, String userKey) {
             return call(MessageFormat.format("/pet/{0}/edit", petId), METHOD_PUT, userKey, pet, PetUpdateResponse.class);
+        }
+
+        public static PetFollowUnfollowResponse follow(String petId, String userKey) {
+            return call(MessageFormat.format("/pet/{0}/follow", petId), METHOD_PUT, userKey, PetFollowUnfollowResponse.class);
+        }
+
+        public static PetFollowUnfollowResponse unfollow(String petId, String userKey) {
+            return call(MessageFormat.format("/pet/{0}/unfollow", petId), METHOD_PUT, userKey, PetFollowUnfollowResponse.class);
+        }
+
+        public static PetFollowersResponse getFollowers(String petId) {
+            return getFollowers(petId, null, null);
+        }
+
+        public static PetFollowersResponse getFollowers(String petId, Integer index, Integer count) {
+            Map<String, Integer> queryParams = new HashMap<>();
+            if (index != null) {
+                queryParams.put("index", index);
+            }
+            if (count != null) {
+                queryParams.put("count", count);
+            }
+            return call(MessageFormat.format("/pet/{0}/followers", petId), queryParams, METHOD_GET, PetFollowersResponse.class);
         }
     }
 
