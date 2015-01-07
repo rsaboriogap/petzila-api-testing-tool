@@ -1,9 +1,9 @@
 package com.petzila.api;
 
-import com.petzila.api.model.Login;
 import com.petzila.api.model.PetziConnect;
 import com.petzila.api.model.response.PetziConnectGetResponse;
 import com.petzila.api.model.response.UserLoginResponse;
+import com.petzila.api.util.Users;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -20,11 +20,7 @@ public class UserDeviceGetTest {
 
     @Before
     public void before() {
-        Login login = new Login();
-        login.email = "rsaborio@wearegap.com";
-        login.password = "qwerty123";
-        login.loginType = "local";
-        UserLoginResponse userLoginResponse = Petzila.UserAPI.login(login);
+        UserLoginResponse userLoginResponse = Petzila.UserAPI.login(Users.get());
         String userKey = userLoginResponse.data.token;
 
         PetziConnect petziConnect = new PetziConnect();

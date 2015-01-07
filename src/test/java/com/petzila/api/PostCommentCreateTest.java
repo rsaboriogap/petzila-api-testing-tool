@@ -1,11 +1,11 @@
 package com.petzila.api;
 
 import com.petzila.api.model.Comment;
-import com.petzila.api.model.Login;
 import com.petzila.api.model.Pet;
 import com.petzila.api.model.Post;
 import com.petzila.api.model.response.ErrorResponse;
 import com.petzila.api.model.response.PostCommentCreateResponse;
+import com.petzila.api.util.Users;
 import com.petzila.api.util.Utils;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,11 +25,7 @@ public class PostCommentCreateTest {
 
     @Before
     public void before() throws Exception {
-        Login login = new Login();
-        login.email = "rsaborio@wearegap.com";
-        login.password = "qwerty123";
-        login.loginType = "local";
-        userKey = Petzila.UserAPI.login(login).data.token;
+        userKey = Petzila.UserAPI.login(Users.get()).data.token;
 
         Pet pet = new Pet();
         pet.name = "Malú";

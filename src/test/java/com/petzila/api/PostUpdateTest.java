@@ -1,9 +1,9 @@
 package com.petzila.api;
 
-import com.petzila.api.model.Login;
 import com.petzila.api.model.Pet;
 import com.petzila.api.model.Post;
 import com.petzila.api.model.response.*;
+import com.petzila.api.util.Users;
 import com.petzila.api.util.Utils;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,11 +21,7 @@ public class PostUpdateTest {
 
     @Before
     public void before() throws Exception {
-        Login login = new Login();
-        login.email = "rsaborio@wearegap.com";
-        login.password = "qwerty123";
-        login.loginType = "local";
-        UserLoginResponse response = Petzila.UserAPI.login(login);
+        UserLoginResponse response = Petzila.UserAPI.login(Users.get());
         userId = response.data.id;
         userKey = response.data.token;
 

@@ -1,9 +1,9 @@
 package com.petzila.api;
 
-import com.petzila.api.model.Login;
 import com.petzila.api.model.Pet;
 import com.petzila.api.model.response.PetCreateResponse;
 import com.petzila.api.model.response.PetGetResponse;
+import com.petzila.api.util.Users;
 import com.petzila.api.util.Utils;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,11 +19,7 @@ public class PetGetTest {
 
     @Before
     public void before() {
-        Login login = new Login();
-        login.email = "rsaborio@wearegap.com";
-        login.password = "qwerty123";
-        login.loginType = "local";
-        userKey = Petzila.UserAPI.login(login).data.token;
+        userKey = Petzila.UserAPI.login(Users.get()).data.token;
     }
 
     @Test

@@ -1,7 +1,7 @@
 package com.petzila.api;
 
-import com.petzila.api.model.Login;
 import com.petzila.api.model.response.UserNotificationGetResponse;
+import com.petzila.api.util.Users;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -16,16 +16,7 @@ public class UserNotificationGetTest {
 
     @Before
     public void before() throws Exception {
-        Login login = new Login();
-        login.email = "rsaborio@wearegap.com";
-        login.password = "qwerty123";
-        login.loginType = "local";
-        userKey = Petzila.UserAPI.login(login).data.token;
-//        Login login = new Login();
-//        login.email = "john.howardpe@gmail.com";
-//        login.password = "Paris13101";
-//        login.loginType = "local";
-//        userKey = Petzila.UserAPI.login(login).data.token;
+        userKey = Petzila.UserAPI.login(Users.get()).data.token;
     }
 
     @Test

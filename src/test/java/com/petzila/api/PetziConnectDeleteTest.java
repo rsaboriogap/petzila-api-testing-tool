@@ -1,11 +1,11 @@
 package com.petzila.api;
 
-import com.petzila.api.model.Login;
 import com.petzila.api.model.PetziConnect;
 import com.petzila.api.model.response.PetziConnectRegisterResponse;
 import com.petzila.api.model.response.PetziConnectDeleteResponse;
 import com.petzila.api.model.response.PetziConnectGetResponse;
 import com.petzila.api.model.response.UserLoginResponse;
+import com.petzila.api.util.Users;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -22,11 +22,7 @@ public class PetziConnectDeleteTest {
 
     @Before
     public void before() {
-        Login login = new Login();
-        login.email = "rsaborio@wearegap.com";
-        login.password = "qwerty123";
-        login.loginType = "local";
-        UserLoginResponse userLoginResponse = Petzila.UserAPI.login(login);
+        UserLoginResponse userLoginResponse = Petzila.UserAPI.login(Users.get());
         userKey = userLoginResponse.data.token;
     }
 
