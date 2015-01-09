@@ -8,6 +8,7 @@ import com.petzila.api.model.response.PetziConnectStartSessionResponse;
 import com.petzila.api.model.response.UserLoginResponse;
 import com.petzila.api.util.Users;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.UUID;
@@ -41,6 +42,7 @@ public class SessionRequestTest {
     }
 
     @Test
+    @Ignore
     public void testStartSessionHappyPath() {
 
         //start a new session
@@ -69,6 +71,7 @@ public class SessionRequestTest {
 
 
     @Test
+    @Ignore
     public void testGetStartSessionMultipleSessionsActive() {
 
         //start a new session
