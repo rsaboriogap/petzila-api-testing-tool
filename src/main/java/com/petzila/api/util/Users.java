@@ -14,11 +14,20 @@ public class Users {
     private static List<Login> logins = new ArrayList<>();
     static {
         Login login = new Login();
-        login.email = "rsaborio@wearegap.com";
-        login.password = "qwerty123";
+        login.email = "test-user-1@wearegap.com";
+        login.password = "password";
         login.loginType = "local";
         logins.add(login);
-        // @TODO crear diferentes "test users"
+        Login login2 = new Login();
+        login2.email = "test-user-2@wearegap.com";
+        login2.password = "password";
+        login2.loginType = "local";
+        logins.add(login2);
+        Login login3 = new Login();
+        login3.email = "test-user-3@wearegap.com";
+        login3.password = "password";
+        login3.loginType = "local";
+        logins.add(login3);
     }
 
     public static Login get() {
