@@ -114,10 +114,9 @@ public class Main {
                 } else {
                     Thread.sleep(10);
                 }
+                cycles++;
             } catch (RejectedExecutionException ree) {
                 // Do nothing
-            } finally {
-                cycles++;
             }
         }
         System.exit(0);
