@@ -141,7 +141,29 @@ public final class Petzila {
     }
 
     public static final class AdminAPI {
-        //@TODO
+        public static AdminLoginResponse login(AdminLogin login) {
+            return call("/admin/login", METHOD_POST, AdminLoginResponse.class);
+        }
+
+        public static AdminLogoutResponse logout(String userid) {
+            return call(MessageFormat.format("/admin/{0}/logout", userid), METHOD_GET, AdminLogoutResponse.class);
+        }
+
+        public static AdminTokenResponse updateToken(String userKey) {
+            return call("/admin/token", METHOD_PUT, userKey, AdminTokenResponse.class);
+        }
+
+        public static AdminPostDeleteResponse deletePost(String postid, String userKey) {
+            return call(MessageFormat.format("/admin/post/{0}", postid), METHOD_DELETE, userKey, AdminPostDeleteResponse.class);
+        }
+
+        public static AdminCommentDeleteResponse deleteComment(String postid, String commentid, String userKey) {
+            return call(MessageFormat.format("/admin/post/{0}/{1}", postid, commentid), METHOD_DELETE, userKey, AdminCommentDeleteResponse.class);
+        }
+
+        public static AdminUserDeleteResponse deleteUser(String userid, String userKey) {
+            return call(MessageFormat.format("/admin/user/{0}", userid), METHOD_DELETE, userKey, AdminUserDeleteResponse.class);
+        }
     }
 
     public static final class PetAPI {
