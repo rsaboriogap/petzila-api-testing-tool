@@ -26,23 +26,22 @@ public class SessionRequestTest {
 
     @Before
     public void before() {
-        UserLoginResponse userLoginResponse = Petzila.UserAPI.login(Users.random());
+        UserLoginResponse userLoginResponse = Petzila.UserAPI.login(Users.getLogin1());
         userKey = userLoginResponse.data.token;
 
         pzcId = "cbee4775-0648-4d3d-b469-b7a7df9d2725";
 
-//        PetziConnect petziConnect = new PetziConnect();
-//        petziConnect.pzcName = "Test device";
-//        petziConnect.isDefault = false;
-//        PetziConnectRegisterResponse response = Petzila.PetziConnectAPI.register(petziConnect, pzcId, userKey);
-//
-//        assertNotNull(response);
-//        assertEquals(response.status, "Success");
-//        assertNotNull(response.data.hbsUrl);
+        PetziConnect petziConnect = new PetziConnect();
+        petziConnect.pzcName = "Test device";
+        petziConnect.isDefault = false;
+        PetziConnectRegisterResponse response = Petzila.PetziConnectAPI.register(petziConnect, pzcId, userKey);
+
+        assertNotNull(response);
+        assertEquals(response.status, "Success");
+        assertNotNull(response.data.hbsUrl);
     }
 
     @Test
-    @Ignore
     public void testStartSessionHappyPath() {
 
         //start a new session
@@ -71,7 +70,6 @@ public class SessionRequestTest {
 
 
     @Test
-    @Ignore
     public void testGetStartSessionMultipleSessionsActive() {
 
         //start a new session
@@ -103,4 +101,27 @@ public class SessionRequestTest {
         assertEquals(getresponse2.data.needProcess, false);
     }
 
+
+    @Test
+    public void testGetStartSessionExpired() {
+
+        //start a new session
+        PetziConnectStartSessionResponse response = Petzila.PetziConnectAPI.startSession(pzcId, userKey);
+        assertNotNull(response);
+        assertEquals(response.status, "Success");
+
+        try {
+            Thread.sleep(15000);
+            //ask for the newly created session
+            PetziConnectGetResponse getresponse = Petzila.PetziConnectAPI.get(pzcId);
+
+
+            assertNotNull(getresponse);
+            assertEquals(getresponse.status, "Success");
+            //assert the newly created session needs to be proccesed
+            assertEquals(getresponse.data.needProcess, false);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 }
