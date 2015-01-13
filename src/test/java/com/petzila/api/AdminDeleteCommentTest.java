@@ -3,25 +3,29 @@ package com.petzila.api;
 import com.petzila.api.model.Comment;
 import com.petzila.api.model.Pet;
 import com.petzila.api.model.Post;
-import com.petzila.api.model.response.PostCommentCreateResponse;
+import com.petzila.api.model.response.AdminCommentDeleteResponse;
+import com.petzila.api.model.response.ErrorResponse;
 import com.petzila.api.util.Users;
 import com.petzila.api.util.Utils;
 import org.junit.Before;
 import org.junit.Test;
 
+import javax.ws.rs.BadRequestException;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 /**
- * Created by rsaborio on 02/12/14.
+ * Created by rylexr on 13/01/15.
  */
-public class PostCommentCreateTest {
-    private String userKey;
+public class AdminDeleteCommentTest {
     private String postId;
+    private String commentId;
+    private String adminKey;
 
     @Before
     public void before() throws Exception {
-        userKey = Petzila.UserAPI.login(Users.random()).data.token;
+        String userKey = Petzila.UserAPI.login(Users.random()).data.token;
 
         Pet pet = new Pet();
         pet.name = "Malú";
@@ -39,16 +43,32 @@ public class PostCommentCreateTest {
         post.description = "This is my awesome dog!";
         post.replacePetProfilePicture = false;
         postId = Petzila.PostAPI.createBinary(post, userKey, Utils.asTempFile("/dog1.jpg")).data.id;
-    }
 
-    @Test
-    public void testPostCommentCreateHappyPath() {
         Comment comment = new Comment();
         comment.comment = "This is a new comment";
         comment.postId = postId;
-        PostCommentCreateResponse response = Petzila.PostAPI.createComment(comment, userKey);
+        commentId = Petzila.PostAPI.createComment(comment, userKey).data.id;
+
+        adminKey = Petzila.AdminAPI.login(Users.admin()).data.token;
+    }
+
+    @Test
+    public void testAdminDeleteCommentHappyPath() {
+        AdminCommentDeleteResponse response = Petzila.AdminAPI.deleteComment(postId, commentId, adminKey);
 
         assertNotNull(response);
         assertEquals(response.status, "Success");
+        assertEquals(response.data.message, "OK");
+
+        try {
+            Petzila.AdminAPI.deleteComment(postId, commentId, adminKey);
+        } catch (BadRequestException bre) {
+            ErrorResponse er = bre.getResponse().readEntity(ErrorResponse.class);
+
+            assertNotNull(er);
+            assertEquals("Fail", er.status);
+            assertEquals(831, er.code);
+            assertEquals("Error deleting the comment.", er.data.message);
+        }
     }
 }
