@@ -26,7 +26,7 @@ public class SessionRequestTest {
 
     @Before
     public void before() {
-        UserLoginResponse userLoginResponse = Petzila.UserAPI.login(Users.getLogin1());
+        UserLoginResponse userLoginResponse = Petzila.UserAPI.login(Users.random());
         userKey = userLoginResponse.data.token;
 
         pzcId = "cbee4775-0648-4d3d-b469-b7a7df9d2725";
