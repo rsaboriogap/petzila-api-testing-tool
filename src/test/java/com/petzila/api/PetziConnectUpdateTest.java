@@ -24,7 +24,7 @@ public class PetziConnectUpdateTest {
 
     @Before
     public void before() {
-        UserLoginResponse userLoginResponse = Petzila.UserAPI.login(Users.get());
+        UserLoginResponse userLoginResponse = Petzila.UserAPI.login(Users.random());
         userKey = userLoginResponse.data.token;
     }
 

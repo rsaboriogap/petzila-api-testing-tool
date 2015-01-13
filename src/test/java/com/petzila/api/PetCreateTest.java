@@ -18,7 +18,7 @@ public class PetCreateTest {
 
     @Before
     public void before() {
-        userKey = Petzila.UserAPI.login(Users.get()).data.token;
+        userKey = Petzila.UserAPI.login(Users.random()).data.token;
     }
 
     @Test

@@ -20,7 +20,7 @@ public class UserDeviceGetTest {
 
     @Before
     public void before() {
-        UserLoginResponse userLoginResponse = Petzila.UserAPI.login(Users.get());
+        UserLoginResponse userLoginResponse = Petzila.UserAPI.login(Users.random());
         String userKey = userLoginResponse.data.token;
 
         PetziConnect petziConnect = new PetziConnect();

@@ -21,7 +21,7 @@ public class PostUpdateTest {
 
     @Before
     public void before() throws Exception {
-        UserLoginResponse response = Petzila.UserAPI.login(Users.get());
+        UserLoginResponse response = Petzila.UserAPI.login(Users.random());
         userId = response.data.id;
         userKey = response.data.token;
 

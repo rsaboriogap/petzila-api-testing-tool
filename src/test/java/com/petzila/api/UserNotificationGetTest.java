@@ -16,7 +16,7 @@ public class UserNotificationGetTest {
 
     @Before
     public void before() throws Exception {
-        userKey = Petzila.UserAPI.login(Users.get()).data.token;
+        userKey = Petzila.UserAPI.login(Users.random()).data.token;
     }
 
     @Test

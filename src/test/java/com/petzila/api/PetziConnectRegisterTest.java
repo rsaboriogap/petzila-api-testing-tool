@@ -1,6 +1,5 @@
 package com.petzila.api;
 
-import com.petzila.api.model.Login;
 import com.petzila.api.model.PetziConnect;
 import com.petzila.api.model.response.ErrorResponse;
 import com.petzila.api.model.response.PetziConnectRegisterResponse;
@@ -26,13 +25,10 @@ public class PetziConnectRegisterTest {
 
     @Before
     public void before() {
-        UserLoginResponse userLoginResponse = Petzila.UserAPI.login(Users.get());
+        UserLoginResponse userLoginResponse = Petzila.UserAPI.login(Users.get(0));
         userKey1 = userLoginResponse.data.token;
 
-        Login login = new Login();
-        login.email = "lema017@gmail.com";
-        login.password = "password";
-        userLoginResponse = Petzila.UserAPI.login(login);
+        userLoginResponse = Petzila.UserAPI.login(Users.get(1));
         userKey2 = userLoginResponse.data.token;
     }
 

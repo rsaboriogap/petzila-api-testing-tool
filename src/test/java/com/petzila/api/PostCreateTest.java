@@ -20,7 +20,7 @@ public class PostCreateTest {
 
     @Before
     public void before() throws Exception {
-        userKey = Petzila.UserAPI.login(Users.get()).data.token;
+        userKey = Petzila.UserAPI.login(Users.random()).data.token;
 
         Pet pet = new Pet();
         pet.name = "Malú";

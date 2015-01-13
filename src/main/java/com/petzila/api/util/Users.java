@@ -12,25 +12,36 @@ import java.util.Random;
 public class Users {
     private static Random random = new Random();
     private static List<Login> logins = new ArrayList<>();
+    private static Login admin;
     static {
         Login login = new Login();
         login.email = "test-user-1@wearegap.com";
         login.password = "password";
         login.loginType = "local";
         logins.add(login);
-        Login login2 = new Login();
-        login2.email = "test-user-2@wearegap.com";
-        login2.password = "password";
-        login2.loginType = "local";
-        logins.add(login2);
-        Login login3 = new Login();
-        login3.email = "test-user-3@wearegap.com";
-        login3.password = "password";
-        login3.loginType = "local";
-        logins.add(login3);
+
+        login = new Login();
+        login.email = "test-user-2@wearegap.com";
+        login.password = "password";
+        login.loginType = "local";
+        logins.add(login);
+
+        // This is an admin user
+        admin = new Login();
+        admin.email = "test-user-3@wearegap.com";
+        admin.password = "password";
+        admin.loginType = "local";
     }
 
-    public static Login get() {
-        return logins.get(random.nextInt(logins.size()));
+    public static Login random() {
+        return logins.get(random.nextInt(logins.size())).clone();
+    }
+
+    public static Login get(int index) {
+        return logins.get(index).clone();
+    }
+
+    public static Login admin() {
+        return admin.clone();
     }
 }

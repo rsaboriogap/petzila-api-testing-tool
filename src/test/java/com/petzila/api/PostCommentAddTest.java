@@ -6,6 +6,7 @@ import com.petzila.api.model.Pet;
 import com.petzila.api.model.Post;
 import com.petzila.api.model.response.ErrorResponse;
 import com.petzila.api.model.response.PostCommentCreateResponse;
+import com.petzila.api.util.Users;
 import com.petzila.api.util.Utils;
 import org.junit.Before;
 import org.junit.Test;
