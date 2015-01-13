@@ -1,5 +1,6 @@
 package com.petzila.api.util;
 
+import com.petzila.api.model.AdminLogin;
 import com.petzila.api.model.Login;
 
 import java.util.ArrayList;
@@ -41,7 +42,10 @@ public class Users {
         return logins.get(index).clone();
     }
 
-    public static Login admin() {
-        return admin.clone();
+    public static AdminLogin admin() {
+        AdminLogin al = new AdminLogin();
+        al.email = admin.email;
+        al.password = admin.password;
+        return al;
     }
 }

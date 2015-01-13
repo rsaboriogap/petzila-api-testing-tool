@@ -142,7 +142,7 @@ public final class Petzila {
 
     public static final class AdminAPI {
         public static AdminLoginResponse login(AdminLogin login) {
-            return call("/admin/login", METHOD_POST, AdminLoginResponse.class);
+            return call("/admin/login", METHOD_POST, login, AdminLoginResponse.class);
         }
 
         public static AdminLogoutResponse logout(String userid) {
