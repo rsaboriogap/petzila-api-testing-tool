@@ -52,4 +52,10 @@ To list all registered Flows run:
     you@yourmachine:/path/to/patt$ java -jar build/libs/patt.jar -l
 
 
+Running Unit Tests
+------------------
+To run all unit tests execute:
+
+    you@yourmachine:/path/to/patt$ ./gradlew cleanTest test
+
 If you find this tool useful buy Randy Saborio (rsaborio@wearegap.com) a beer.

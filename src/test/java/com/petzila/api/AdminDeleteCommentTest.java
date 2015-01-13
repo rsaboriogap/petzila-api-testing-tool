@@ -57,8 +57,8 @@ public class AdminDeleteCommentTest {
         AdminCommentDeleteResponse response = Petzila.AdminAPI.deleteComment(postId, commentId, adminKey);
 
         assertNotNull(response);
-        assertEquals(response.status, "Success");
-        assertEquals(response.data.message, "OK");
+        assertEquals("Success", response.status);
+        assertEquals("OK", response.data.message);
 
         try {
             Petzila.AdminAPI.deleteComment(postId, commentId, adminKey);

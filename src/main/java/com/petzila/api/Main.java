@@ -177,7 +177,8 @@ public class Main {
     }
 
     private static void printReport() {
-        float elapsedTime = (System.currentTimeMillis() - start) / 1000f;
+        long end = System.currentTimeMillis();
+        float elapsedTime = (end - start) / 1000f;
         executor.shutdownNow();
         try {
             executor.awaitTermination(8, TimeUnit.SECONDS);
@@ -188,6 +189,8 @@ public class Main {
         System.out.println();
         System.out.println();
         System.out.println(MessageFormat.format("Environment: \t\t {0}", Environments.get()));
+        System.out.println(MessageFormat.format("Started on: \t\t {0}", new Date(start)));
+        System.out.println(MessageFormat.format("Finished on: \t\t {0}", new Date(end)));
         System.out.println(MessageFormat.format("Flow: \t\t\t {0}", flow.getName()));
         System.out.println(MessageFormat.format("Hits: \t\t\t {0}", hitsCount.get()));
         System.out.println(MessageFormat.format("Hits/sec: \t\t {0}", hitsCount.get() / elapsedTime));
