@@ -220,6 +220,14 @@ public final class Petzila {
             return call(MessageFormat.format("/user/{0}/devices", userId), METHOD_GET, userKey, UserDeviceGetResponse.class);
         }
 
+        public static UserPetGetResponse getPets(String userKey, String userId) {
+            return getPets(userKey, userId, null, null);
+        }
+
+        public static UserPetGetResponse getPets(String userKey, String userId, Integer index, Integer count) {
+            return call(MessageFormat.format("/user/{0}/pets", userId), METHOD_GET, userKey, UserPetGetResponse.class);
+        }
+
         public static UserNotificationGetResponse getNotifications(String userKey) {
             return getNotifications(userKey, null, null);
         }
