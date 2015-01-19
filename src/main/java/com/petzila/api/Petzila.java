@@ -184,11 +184,11 @@ public final class Petzila {
         }
 
         public static PetFollowUnfollowResponse follow(String petId, String userKey) {
-            return call(MessageFormat.format("/pet/{0}/follow", petId), METHOD_PUT, userKey, PetFollowUnfollowResponse.class);
+            return call(MessageFormat.format("/pet/{0}/follow", petId), METHOD_PUT, userKey, new Empty(), PetFollowUnfollowResponse.class);
         }
 
         public static PetFollowUnfollowResponse unfollow(String petId, String userKey) {
-            return call(MessageFormat.format("/pet/{0}/unfollow", petId), METHOD_PUT, userKey, PetFollowUnfollowResponse.class);
+            return call(MessageFormat.format("/pet/{0}/unfollow", petId), METHOD_PUT, userKey,new Empty(), PetFollowUnfollowResponse.class);
         }
 
         public static PetFollowersResponse getFollowers(String petId) {

@@ -27,9 +27,15 @@ public class Users {
         login.loginType = "local";
         logins.add(login);
 
+        login = new Login();
+        login.email = "test-user-3@wearegap.com";
+        login.password = "password";
+        login.loginType = "local";
+        logins.add(login);
+
         // This is an admin user
         admin = new Login();
-        admin.email = "test-user-3@wearegap.com";
+        admin.email = "test-admin-1@wearegap.com";
         admin.password = "password";
         admin.loginType = "local";
     }
@@ -47,5 +53,9 @@ public class Users {
         al.email = admin.email;
         al.password = admin.password;
         return al;
+    }
+
+    public static Login getLogin1(){
+        return logins.get(0);
     }
 }
