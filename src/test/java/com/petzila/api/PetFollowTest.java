@@ -23,7 +23,6 @@ import static org.junit.Assert.assertTrue;
 public class PetFollowTest {
     private static String userKey;
     private static String userKey2;
-    private static String userKey3;
 
     private static String petId;
 
@@ -31,7 +30,6 @@ public class PetFollowTest {
     public static void before() throws Exception {
         userKey = Petzila.UserAPI.login(Users.get(0)).data.token;
         userKey2 = Petzila.UserAPI.login(Users.get(1)).data.token;
-        userKey3 = Petzila.UserAPI.login(Users.get(2)).data.token;
 
         Pet pet = new Pet();
         pet.name = "test-pet-1";
