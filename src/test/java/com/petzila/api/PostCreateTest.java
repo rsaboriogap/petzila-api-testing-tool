@@ -60,7 +60,8 @@ public class PostCreateTest {
         post.petId = petId;
         post.description = "This is my awesome dog!";
         post.replacePetProfilePicture = false;
-        PostCreateResponse response = Petzila.PostAPI.createBinary(post, userKey, Utils.asTempFile("/dog1.jpg"));
+        post.mediaIds="http://images.digitalmedianet.com/2005/Week_8/ns6rwb8c/story/flower4megapixel.jpg";
+        PostCreateResponse response = Petzila.PostAPI.create(post, userKey);
 
         assertNotNull(response);
         assertEquals(response.status, "Success");
