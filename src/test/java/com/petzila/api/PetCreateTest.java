@@ -45,6 +45,9 @@ public class PetCreateTest {
 
     @Test
     public void testPetCreateVerifyCounters() throws Exception {
+        UserLoginResponse userLoginResponse = Petzila.UserAPI.login(Users.random());
+        userKey=userLoginResponse.data.token;
+        int beforeLoginPetCounter = Integer.parseInt(userLoginResponse.data.petsCount);
 
         //bring pets counter for user
         UserPetGetResponse userPetGetResponseBefore=Petzila.UserAPI.getPets(userKey,userId);
@@ -55,6 +58,7 @@ public class PetCreateTest {
 
         //verify both counters are equal
         assertTrue(petCounterBefore==petsCounterBefore);
+        assertTrue(petCounterBefore==beforeLoginPetCounter);
 
 
         //add new pet
@@ -92,10 +96,14 @@ public class PetCreateTest {
         UserGetResponse userGetResponseAfter= Petzila.UserAPI.getUser(userKey,userId);
         int petsCounterAfter=Integer.parseInt(userGetResponseAfter.data.petsCount);
 
+        UserLoginResponse userLoginResponseBefore = Petzila.UserAPI.login(Users.random());
+        int afterLoginPetCounter = Integer.parseInt(userLoginResponseBefore.data.petsCount);
+
         //verify both counters are equal
         assertTrue(petCounterAfter==petsCounterAfter);
 
         assertTrue(petCounterBefore+1==petCounterAfter);
+        assertTrue(petCounterBefore+1==afterLoginPetCounter);
 
     }
 }
