@@ -242,6 +242,10 @@ public final class Petzila {
             }
             return call("/user/notifications", queryParams, METHOD_GET, userKey, UserNotificationGetResponse.class);
         }
+
+        public static UserGetResponse getUser(String userKey, String userId) {
+            return call(MessageFormat.format("/user/{0}", userId), METHOD_GET, userKey, UserGetResponse.class);
+        }
     }
 
     public static final class PostAPI {

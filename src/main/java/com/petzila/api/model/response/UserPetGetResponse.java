@@ -10,8 +10,8 @@ public final class UserPetGetResponse extends Response {
 
     public static class Data {
         public String id;
-        public String Name;
-        public String Description;
+        public String name;
+        public String description;
         public String profilePicture;
         public String updatedAt;
         public String createdAt;
@@ -21,8 +21,8 @@ public final class UserPetGetResponse extends Response {
         public String toString() {
             return MoreObjects.toStringHelper(this)
                     .add("id", id)
-                    .add("Name", Name)
-                    .add("Description", Description)
+                    .add("Name", name)
+                    .add("Description", description)
                     .add("updatedAt", updatedAt)
                     .add("createdAt", createdAt)
                     .add("followed", followed)
