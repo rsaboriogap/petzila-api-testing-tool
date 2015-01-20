@@ -37,17 +37,17 @@ public class PostCreateTest {
         petId = Petzila.PetAPI.create(pet, userKey).data.id;
     }
 
-//    @Test
-//    public void testPostCreateMultipartHappyPath() throws Exception {
-//        Post post = new Post();
-//        post.petId = petId;
-//        post.description = "This is my awesome dog!";
-//        post.replacePetProfilePicture = false;
-//        PostCreateResponse response = Petzila.PostAPI.createBinary(post, userKey, Utils.asTempFile("/dog1.jpg"));
-//
-//        assertNotNull(response);
-//        assertEquals(response.status, "Success");
-//    }
+    @Test
+    public void testPostCreateMultipartHappyPath() throws Exception {
+        Post post = new Post();
+        post.petId = petId;
+        post.description = "This is my awesome dog!";
+        post.replacePetProfilePicture = false;
+        PostCreateResponse response = Petzila.PostAPI.createBinary(post, userKey, Utils.asTempFile("/dog1.jpg"));
+
+        assertNotNull(response);
+        assertEquals(response.status, "Success");
+    }
 
     @Test
     public void testPostCreateVerifyCounter() throws Exception {
