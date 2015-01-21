@@ -2,17 +2,17 @@ package com.petzila.api;
 
 import com.petzila.api.model.Pet;
 import com.petzila.api.model.Post;
+import com.petzila.api.model.response.ErrorResponse;
 import com.petzila.api.model.response.PetGetResponse;
 import com.petzila.api.model.response.PostCreateResponse;
 import com.petzila.api.util.Users;
 import com.petzila.api.util.Utils;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import javax.ws.rs.BadRequestException;
+
+import static org.junit.Assert.*;
 
 /**
  * Created by rsaborio on 02/12/14.
@@ -22,7 +22,7 @@ public class PostCreateTest {
     private static String petId;
 
     @BeforeClass
-    public static  void before() throws Exception {
+    public static void before() throws Exception {
         userKey = Petzila.UserAPI.login(Users.random()).data.token;
 
         Pet pet = new Pet();
@@ -51,24 +51,58 @@ public class PostCreateTest {
 
     @Test
     public void testPostCreateVerifyCounter() throws Exception {
-
-        PetGetResponse petGetResponseBefore = Petzila.PetAPI.get(petId);
-        int beforePostCounter= petGetResponseBefore.data.postCount;
-        assertTrue(beforePostCounter>=0);
+        int beforeCounter = Petzila.PetAPI.get(petId).data.postCount;
+        assertTrue(beforeCounter >= 0);
 
         Post post = new Post();
         post.petId = petId;
         post.description = "This is my awesome dog!";
         post.replacePetProfilePicture = false;
-        post.mediaIds="http://images.digitalmedianet.com/2005/Week_8/ns6rwb8c/story/flower4megapixel.jpg";
+        post.mediaIds = "http://images.digitalmedianet.com/2005/Week_8/ns6rwb8c/story/flower4megapixel.jpg";
         PostCreateResponse response = Petzila.PostAPI.create(post, userKey);
 
         assertNotNull(response);
         assertEquals(response.status, "Success");
 
-        PetGetResponse petGetResponseAfter = Petzila.PetAPI.get(petId);
-        int afterPostCounter= petGetResponseAfter.data.postCount;
+        int afterCounter = Petzila.PetAPI.get(petId).data.postCount;
+        assertEquals(beforeCounter + 1, afterCounter);
+    }
 
-        assertTrue(beforePostCounter+1==afterPostCounter);
+    @Test
+    public void testPostCreateBinaryVerifyCounter() throws Exception {
+        int beforeCounter = Petzila.PetAPI.get(petId).data.postCount;
+        assertTrue(beforeCounter >= 0);
+
+        Post post = new Post();
+        post.petId = petId;
+        post.description = "This is my awesome dog!";
+        post.replacePetProfilePicture = false;
+        PostCreateResponse response = Petzila.PostAPI.createBinary(post, userKey, Utils.asTempFile("/dog1.jpg"));
+
+        assertNotNull(response);
+        assertEquals(response.status, "Success");
+
+        int afterCounter = Petzila.PetAPI.get(petId).data.postCount;
+        assertEquals(beforeCounter + 1, afterCounter);
+    }
+
+    @Test
+    public void testPostCreateBase64VerifyCounter() throws Exception {
+        int beforeCounter = Petzila.PetAPI.get(petId).data.postCount;
+        assertTrue(beforeCounter >= 0);
+
+        Post post = new Post();
+        post.petId = petId;
+        post.description = "This is my awesome dog!";
+        post.replacePetProfilePicture = false;
+        post.content = Utils.asBase64("/dog1.jpg");
+        post.resourceType = "image/jpeg";
+        PostCreateResponse response = Petzila.PostAPI.createBase64(post, userKey);
+
+        assertNotNull(response);
+        assertEquals(response.status, "Success");
+
+        int afterCounter = Petzila.PetAPI.get(petId).data.postCount;
+        assertEquals(beforeCounter + 1, afterCounter);
     }
 }
